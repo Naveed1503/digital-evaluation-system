@@ -8,3 +8,9 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Evaluation workflow writes (marks, assignment, publishing) go through SECURITY DEFINER SQL functions (auto_assign, submit_evaluation, submit_moderation, publish_results) — they validate role, ownership and mark limits server-side.
+- Student identity lives only in script_owners (admin/student readable) so evaluators and moderators see anonymous script codes only.
+- Roles are in user_roles checked via has_role(); the first account to sign up becomes admin, later ones default to student.
+- Grade bands and final-mark rule live in src/lib/grading.ts with tests next to it.
