@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useMe } from "@/hooks/use-auth";
 import { ScriptViewer } from "@/components/ScriptViewer";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ type Rec = Record<string, string>;
 export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "evaluate" | "moderate" }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const { data: me } = useMe();
   const { data, isLoading } = useQuery({
     queryKey: ["marking", scriptId],
     queryFn: async () => {
@@ -57,7 +59,10 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
   const { script, questions, marks } = data;
   const maxTotal = questions.reduce((s, q) => s + Number(q.max_marks), 0);
   const exam = script.exams as { code: string; title: string; status: string } | null;
+  const notMine =
+    !!me && (mode === "evaluate" ? script.evaluator_id !== me.user.id : script.moderator_id !== me.user.id);
   const locked =
+    notMine ||
     exam?.status === "published" ||
     (mode === "evaluate" && script.status !== "assigned") ||
     (mode === "moderate" && !["evaluated", "moderated"].includes(script.status));
@@ -198,7 +203,9 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
           )}
           {locked ? (
             <p className="mt-4 rounded-sm bg-muted p-3 text-xs text-muted-foreground">
-              This script is locked for {mode === "evaluate" ? "valuation" : "moderation"}.
+              {notMine
+                ? `This script is assigned to another ${mode === "evaluate" ? "evaluator" : "moderator"}. You can view it, but only the assigned person can submit.`
+                : `This script is locked for ${mode === "evaluate" ? "valuation" : "moderation"}.`}
             </p>
           ) : (
             <div className="mt-5 flex gap-2">
