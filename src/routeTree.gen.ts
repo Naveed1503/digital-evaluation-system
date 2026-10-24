@@ -10,33 +10,110 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedEvaluateIndexRouteImport } from './routes/_authenticated/evaluate.index'
+import { Route as AuthenticatedEvaluateScriptIdRouteImport } from './routes/_authenticated/evaluate.$scriptId'
+import { Route as AuthenticatedModerateIndexRouteImport } from './routes/_authenticated/moderate.index'
+import { Route as AuthenticatedModerateScriptIdRouteImport } from './routes/_authenticated/moderate.$scriptId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedEvaluateIndexRoute =
+  AuthenticatedEvaluateIndexRouteImport.update({
+    id: '/evaluate/',
+    path: '/evaluate/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEvaluateScriptIdRoute =
+  AuthenticatedEvaluateScriptIdRouteImport.update({
+    id: '/evaluate/$scriptId',
+    path: '/evaluate/$scriptId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedModerateIndexRoute =
+  AuthenticatedModerateIndexRouteImport.update({
+    id: '/moderate/',
+    path: '/moderate/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedModerateScriptIdRoute =
+  AuthenticatedModerateScriptIdRouteImport.update({
+    id: '/moderate/$scriptId',
+    path: '/moderate/$scriptId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/evaluate/$scriptId': typeof AuthenticatedEvaluateScriptIdRoute
+  '/moderate/$scriptId': typeof AuthenticatedModerateScriptIdRoute
+  '/evaluate/': typeof AuthenticatedEvaluateIndexRoute
+  '/moderate/': typeof AuthenticatedModerateIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/evaluate/$scriptId': typeof AuthenticatedEvaluateScriptIdRoute
+  '/moderate/$scriptId': typeof AuthenticatedModerateScriptIdRoute
+  '/evaluate': typeof AuthenticatedEvaluateIndexRoute
+  '/moderate': typeof AuthenticatedModerateIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/evaluate/$scriptId': typeof AuthenticatedEvaluateScriptIdRoute
+  '/_authenticated/moderate/$scriptId': typeof AuthenticatedModerateScriptIdRoute
+  '/_authenticated/evaluate/': typeof AuthenticatedEvaluateIndexRoute
+  '/_authenticated/moderate/': typeof AuthenticatedModerateIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/evaluate/$scriptId'
+    | '/moderate/$scriptId'
+    | '/evaluate/'
+    | '/moderate/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/evaluate/$scriptId'
+    | '/moderate/$scriptId'
+    | '/evaluate'
+    | '/moderate'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/evaluate/$scriptId'
+    | '/_authenticated/moderate/$scriptId'
+    | '/_authenticated/evaluate/'
+    | '/_authenticated/moderate/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +125,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/evaluate/': {
+      id: '/_authenticated/evaluate/'
+      path: '/evaluate'
+      fullPath: '/evaluate/'
+      preLoaderRoute: typeof AuthenticatedEvaluateIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/evaluate/$scriptId': {
+      id: '/_authenticated/evaluate/$scriptId'
+      path: '/evaluate/$scriptId'
+      fullPath: '/evaluate/$scriptId'
+      preLoaderRoute: typeof AuthenticatedEvaluateScriptIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/moderate/': {
+      id: '/_authenticated/moderate/'
+      path: '/moderate'
+      fullPath: '/moderate/'
+      preLoaderRoute: typeof AuthenticatedModerateIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/moderate/$scriptId': {
+      id: '/_authenticated/moderate/$scriptId'
+      path: '/moderate/$scriptId'
+      fullPath: '/moderate/$scriptId'
+      preLoaderRoute: typeof AuthenticatedModerateScriptIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedEvaluateScriptIdRoute: typeof AuthenticatedEvaluateScriptIdRoute
+  AuthenticatedModerateScriptIdRoute: typeof AuthenticatedModerateScriptIdRoute
+  AuthenticatedEvaluateIndexRoute: typeof AuthenticatedEvaluateIndexRoute
+  AuthenticatedModerateIndexRoute: typeof AuthenticatedModerateIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedEvaluateScriptIdRoute: AuthenticatedEvaluateScriptIdRoute,
+  AuthenticatedModerateScriptIdRoute: AuthenticatedModerateScriptIdRoute,
+  AuthenticatedEvaluateIndexRoute: AuthenticatedEvaluateIndexRoute,
+  AuthenticatedModerateIndexRoute: AuthenticatedModerateIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
