@@ -174,7 +174,7 @@ function AdminPanel() {
                   <tr key={u.id + role} className="border-t border-border">
                     <td className="px-4 py-2.5">{u.full_name || u.email}</td>
                     <td className="text-muted-foreground">{role}</td>
-                    <td className="text-center font-mono">{mine.filter((s) => s.status === pend || (role === "Evaluator" ? false : s.status === "assigned")).length}</td>
+                    <td className="text-center font-mono">{mine.filter((s) => s.status === pend).length}</td>
                     <td className="text-center font-mono">{mine.filter((s) => (role === "Evaluator" ? ["evaluated", "moderated"] : ["moderated"]).includes(s.status)).length}</td>
                   </tr>
                 ))}
