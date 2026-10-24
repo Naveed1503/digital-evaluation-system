@@ -57,7 +57,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div className="min-w-0">
             <p className="eyebrow text-[10px] text-sidebar-primary">Office of the Controller</p>
-            <p className="mt-0.5 truncate font-serif text-[15px] leading-tight text-sidebar-accent-foreground">
+            <p className="mt-0.5 font-serif text-[15px] leading-tight text-sidebar-accent-foreground">
               Digital Evaluation System
             </p>
           </div>
@@ -67,13 +67,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link
               key={n.to}
               to={n.to}
-              className="group relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm text-sidebar-foreground/85 transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              className="group flex items-center gap-3 rounded-md border-l-[3px] border-transparent px-3 py-2.5 text-sm text-sidebar-foreground/85 transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               activeProps={{
                 className:
-                  "bg-sidebar-accent text-sidebar-accent-foreground font-semibold shadow-sm",
+                  "bg-sidebar-accent text-sidebar-accent-foreground font-semibold shadow-sm border-sidebar-primary",
               }}
             >
-              <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-full bg-sidebar-primary transition-all duration-200 group-[.active]:h-5 [.active_&]:h-5" />
               <n.icon className="h-4 w-4 shrink-0 opacity-70 transition-opacity group-hover:opacity-100" />
               {n.label}
             </Link>
