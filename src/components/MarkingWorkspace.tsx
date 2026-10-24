@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+type Rec = Record<string, string>;
+
 export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "evaluate" | "moderate" }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -29,51 +31,89 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
     },
   });
 
-  const [values, setValues] = useState<Record<string, string>>({});
+  const [values, setValues] = useState<Rec>({});
+  const [notes, setNotes] = useState<Rec>({}); // evaluator remarks or moderator reasons
   const [remark, setRemark] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!data) return;
-    const v: Record<string, string> = {};
+    const v: Rec = {};
+    const n: Rec = {};
     for (const q of data.questions) {
       const m = data.marks.find((x) => x.question_id === q.id);
-      const n = mode === "moderate" ? (m?.moderated_marks ?? m?.evaluator_marks) : m?.evaluator_marks;
-      v[q.id] = n == null ? "" : String(n);
+      const num = mode === "moderate" ? (m?.moderated_marks ?? m?.evaluator_marks) : m?.evaluator_marks;
+      v[q.id] = num == null ? "" : String(num);
+      n[q.id] = (mode === "evaluate" ? m?.evaluator_remark : "") ?? "";
     }
     setValues(v);
+    setNotes(n);
     setRemark(data.marks.find((m) => m.remark)?.remark ?? "");
   }, [data, mode]);
 
-  const total = useMemo(
-    () => Object.values(values).reduce((s, v) => s + (Number(v) || 0), 0),
-    [values],
-  );
-  const maxTotal = data?.questions.reduce((s, q) => s + Number(q.max_marks), 0) ?? 0;
+  const total = useMemo(() => Object.values(values).reduce((s, v) => s + (Number(v) || 0), 0), [values]);
 
   if (isLoading || !data) return <p className="text-muted-foreground">Loading script…</p>;
   const { script, questions, marks } = data;
+  const maxTotal = questions.reduce((s, q) => s + Number(q.max_marks), 0);
   const exam = script.exams as { code: string; title: string; status: string } | null;
   const locked =
     exam?.status === "published" ||
-    (mode === "evaluate" && script.status === "moderated") ||
+    (mode === "evaluate" && script.status !== "assigned") ||
     (mode === "moderate" && !["evaluated", "moderated"].includes(script.status));
 
-  async function submit() {
-    const payload: Record<string, number> = {};
+  const prevFor = (qid: string) => {
+    const m = marks.find((x) => x.question_id === qid);
+    return m?.moderated_marks ?? m?.evaluator_marks ?? null;
+  };
+  const changed = (qid: string) => mode === "moderate" && values[qid] !== "" && Number(values[qid]) !== Number(prevFor(qid));
+  const answered = questions.filter((q) => values[q.id] !== "" && values[q.id] != null).length;
+
+  function validate(requireAll: boolean): Record<string, number | string> | null {
+    const out: Record<string, number | string> = {};
     for (const q of questions) {
-      const raw = values[q.id];
-      if (raw === "" || raw == null) { toast.error(`Enter marks for Q${q.number}`); return; }
+      const raw = values[q.id] ?? "";
+      if (raw === "") {
+        if (requireAll) { toast.error(`Enter marks for Q${q.number}`); return null; }
+        out[q.id] = "";
+        continue;
+      }
       const n = Number(raw);
-      if (Number.isNaN(n) || n < 0 || n > Number(q.max_marks))
-        { toast.error(`Q${q.number}: marks must be between 0 and ${q.max_marks}`); return; }
-      payload[q.id] = n;
+      if (Number.isNaN(n) || n < 0 || n > Number(q.max_marks)) {
+        toast.error(`Q${q.number}: marks must be between 0 and ${q.max_marks}`);
+        return null;
+      }
+      if (mode === "moderate" && changed(q.id) && !notes[q.id]?.trim()) {
+        toast.error(`Give a reason for changing Q${q.number}`);
+        return null;
+      }
+      out[q.id] = n;
     }
+    return out;
+  }
+
+  async function saveDraft() {
+    const payload = validate(false);
+    if (!payload) return;
     setBusy(true);
+    const { error } = await supabase.rpc("save_evaluation_draft", { _script_id: scriptId, _marks: payload, _remarks: notes });
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Draft saved");
+    qc.invalidateQueries({ queryKey: ["marking", scriptId] });
+  }
+
+  async function submit() {
+    const payload = validate(true);
+    if (!payload) return;
+    if (!confirm(mode === "evaluate" ? "Submit valuation? You can't edit it afterwards." : "Confirm moderation?")) return;
+    setBusy(true);
+    const reasons: Rec = {};
+    for (const q of questions) if (changed(q.id)) reasons[q.id] = notes[q.id] ?? "";
     const { error } =
       mode === "evaluate"
-        ? await supabase.rpc("submit_evaluation", { _script_id: scriptId, _marks: payload })
-        : await supabase.rpc("submit_moderation", { _script_id: scriptId, _marks: payload, _remark: remark });
+        ? await supabase.rpc("submit_evaluation", { _script_id: scriptId, _marks: payload, _remarks: notes })
+        : await supabase.rpc("submit_moderation", { _script_id: scriptId, _marks: payload, _remark: remark, _reasons: reasons });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     toast.success(mode === "evaluate" ? "Valuation submitted" : "Moderation recorded");
@@ -95,65 +135,65 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
         </div>
         <StatusBadge status={script.status} />
       </div>
-      <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
+      <div className="grid gap-6 xl:grid-cols-[1fr_440px]">
         <ScriptViewer code={script.code} filePath={script.file_path} sampleAnswers={script.sample_answers} />
         <aside className="h-fit rounded-md border border-border bg-card p-5 shadow-card xl:sticky xl:top-6">
-          <p className="eyebrow text-gold">{mode === "evaluate" ? "Valuation sheet" : "Moderation sheet"}</p>
-          <table className="mt-4 w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-xs text-muted-foreground">
-                <th className="py-2">Q</th>
-                {mode === "moderate" && <th>Evaluator</th>}
-                <th>Marks</th>
-                <th className="text-right">Max</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questions.map((q) => {
-                const m = marks.find((x) => x.question_id === q.id);
-                return (
-                  <tr key={q.id} className="border-b border-border/60">
-                    <td className="py-2 pr-2">
-                      <span className="font-semibold">Q{q.number}</span>
-                      {q.label && <span className="block text-xs text-muted-foreground">{q.label}</span>}
-                    </td>
-                    {mode === "moderate" && <td className="font-mono">{m?.evaluator_marks ?? "—"}</td>}
-                    <td className="py-1.5">
-                      <Input
-                        type="number"
-                        min={0}
-                        max={Number(q.max_marks)}
-                        step="0.5"
-                        disabled={locked}
-                        aria-label={`Marks for question ${q.number}`}
-                        value={values[q.id] ?? ""}
-                        onChange={(e) => setValues((s) => ({ ...s, [q.id]: e.target.value }))}
-                        className="h-8 w-20 font-mono"
-                      />
-                    </td>
-                    <td className="text-right font-mono text-muted-foreground">{q.max_marks}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="flex items-center justify-between">
+            <p className="eyebrow text-gold">{mode === "evaluate" ? "Valuation sheet" : "Moderation sheet"}</p>
+            <span className="text-xs text-muted-foreground">{answered}/{questions.length} marked</span>
+          </div>
+          <div className="mt-3 space-y-3">
+            {questions.map((q) => {
+              const m = marks.find((x) => x.question_id === q.id);
+              const isChanged = changed(q.id);
+              return (
+                <div key={q.id} className={`rounded-sm border p-3 ${isChanged ? "border-gold bg-gold/10" : "border-border"}`}>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold">Q{q.number}</p>
+                      {q.label && <p className="text-xs text-muted-foreground">{q.label}</p>}
+                    </div>
+                    {mode === "moderate" && (
+                      <span className="text-xs text-muted-foreground">Eval: <span className="font-mono">{m?.evaluator_marks ?? "—"}</span></span>
+                    )}
+                    <Input
+                      type="number" min={0} max={Number(q.max_marks)} step="0.5" disabled={locked}
+                      aria-label={`Marks for question ${q.number}`}
+                      value={values[q.id] ?? ""}
+                      onChange={(e) => setValues((s) => ({ ...s, [q.id]: e.target.value }))}
+                      className="h-8 w-20 font-mono"
+                    />
+                    <span className="w-10 text-right font-mono text-xs text-muted-foreground">/{q.max_marks}</span>
+                  </div>
+                  {mode === "moderate" && m?.evaluator_remark && (
+                    <p className="mt-2 text-xs italic text-muted-foreground">Evaluator: “{m.evaluator_remark}”</p>
+                  )}
+                  {mode === "moderate" && m?.moderation_reason && !isChanged && (
+                    <p className="mt-1 text-xs text-muted-foreground">Earlier change: {m.moderation_reason}</p>
+                  )}
+                  {(mode === "evaluate" || isChanged) && !locked && (
+                    <Input
+                      className="mt-2 h-8 text-xs"
+                      placeholder={mode === "evaluate" ? "Remark (optional)" : "Reason for change (required)"}
+                      value={notes[q.id] ?? ""}
+                      onChange={(e) => setNotes((s) => ({ ...s, [q.id]: e.target.value }))}
+                    />
+                  )}
+                  {mode === "evaluate" && locked && m?.evaluator_remark && (
+                    <p className="mt-2 text-xs italic text-muted-foreground">“{m.evaluator_remark}”</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
           <div className="mt-4 flex items-baseline justify-between border-t-2 border-primary pt-3">
             <span className="font-semibold">Total</span>
-            <span className="font-mono text-2xl">
-              {total} <span className="text-sm text-muted-foreground">/ {maxTotal}</span>
-            </span>
+            <span className="font-mono text-2xl">{total} <span className="text-sm text-muted-foreground">/ {maxTotal}</span></span>
           </div>
           {mode === "moderate" && (
-            <div className="mt-4">
-              <p className="mb-1 text-xs text-muted-foreground">
-                Evaluator total: <span className="font-mono">{script.evaluator_total ?? "—"}</span>
-              </p>
-              <Textarea
-                placeholder="Moderator remarks (optional)"
-                value={remark}
-                disabled={locked}
-                onChange={(e) => setRemark(e.target.value)}
-              />
+            <div className="mt-3">
+              <p className="mb-1 text-xs text-muted-foreground">Evaluator total: <span className="font-mono">{script.evaluator_total ?? "—"}</span></p>
+              <Textarea placeholder="Overall moderator remarks (optional)" value={remark} disabled={locked} onChange={(e) => setRemark(e.target.value)} />
             </div>
           )}
           {locked ? (
@@ -161,9 +201,14 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
               This script is locked for {mode === "evaluate" ? "valuation" : "moderation"}.
             </p>
           ) : (
-            <Button className="mt-5 w-full" onClick={submit} disabled={busy}>
-              {mode === "evaluate" ? "Submit valuation" : "Confirm moderation"}
-            </Button>
+            <div className="mt-5 flex gap-2">
+              {mode === "evaluate" && (
+                <Button variant="outline" className="flex-1" onClick={saveDraft} disabled={busy}>Save draft</Button>
+              )}
+              <Button className="flex-1" onClick={submit} disabled={busy}>
+                {mode === "evaluate" ? "Submit valuation" : "Confirm moderation"}
+              </Button>
+            </div>
           )}
         </aside>
       </div>

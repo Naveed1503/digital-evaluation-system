@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/StatusBadge";
+import { Button } from "@/components/ui/button";
 import { useMe } from "@/hooks/use-auth";
 import { finalMark, gradeFor, percentage } from "@/lib/grading";
 
@@ -35,7 +36,9 @@ function ResultsPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="Student" title="Statement of marks" />
+      <PageHeader eyebrow="Student" title="Statement of marks">
+        {data.length > 0 && <Button variant="outline" onClick={() => window.print()}>Print / Save PDF</Button>}
+      </PageHeader>
       {isLoading ? (
         <p className="text-muted-foreground">Loading…</p>
       ) : data.length === 0 ? (

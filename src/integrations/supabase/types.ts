@@ -74,27 +74,81 @@ export type Database = {
         }
         Relationships: []
       }
+      mark_revisions: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          id: string
+          new_marks: number | null
+          old_marks: number | null
+          question_id: string
+          reason: string
+          script_id: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_marks?: number | null
+          old_marks?: number | null
+          question_id: string
+          reason: string
+          script_id: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_marks?: number | null
+          old_marks?: number | null
+          question_id?: string
+          reason?: string
+          script_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mark_revisions_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mark_revisions_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marks: {
         Row: {
           evaluator_marks: number | null
+          evaluator_remark: string | null
           id: string
           moderated_marks: number | null
+          moderation_reason: string | null
           question_id: string
           remark: string | null
           script_id: string
         }
         Insert: {
           evaluator_marks?: number | null
+          evaluator_remark?: string | null
           id?: string
           moderated_marks?: number | null
+          moderation_reason?: string | null
           question_id: string
           remark?: string | null
           script_id: string
         }
         Update: {
           evaluator_marks?: number | null
+          evaluator_remark?: string | null
           id?: string
           moderated_marks?: number | null
+          moderation_reason?: string | null
           question_id?: string
           remark?: string | null
           script_id?: string
@@ -294,12 +348,25 @@ export type Database = {
         }[]
       }
       publish_results: { Args: { _exam_id: string }; Returns: undefined }
+      reassign_script: {
+        Args: { _evaluator: string; _moderator: string; _script_id: string }
+        Returns: undefined
+      }
+      save_evaluation_draft: {
+        Args: { _marks: Json; _remarks: Json; _script_id: string }
+        Returns: undefined
+      }
       submit_evaluation: {
-        Args: { _marks: Json; _script_id: string }
+        Args: { _marks: Json; _remarks?: Json; _script_id: string }
         Returns: number
       }
       submit_moderation: {
-        Args: { _marks: Json; _remark: string; _script_id: string }
+        Args: {
+          _marks: Json
+          _reasons?: Json
+          _remark: string
+          _script_id: string
+        }
         Returns: number
       }
     }
