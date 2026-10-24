@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Landmark } from "lucide-react";
+import { Landmark, ShieldCheck, EyeOff, History } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import heroVisual from "@/assets/hero-visual.jpg";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -21,6 +22,12 @@ export const Route = createFileRoute("/auth")({
   }),
   component: AuthPage,
 });
+
+const ASSURANCES = [
+  { icon: EyeOff, text: "Scripts are fully anonymised" },
+  { icon: ShieldCheck, text: "Role-based, restricted access" },
+  { icon: History, text: "Every action is audit logged" },
+];
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -69,53 +76,75 @@ function AuthPage() {
   }
 
   return (
-    <div className="grid min-h-screen md:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-seal p-12 text-primary-foreground md:flex">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.35]"
-          style={{
-            backgroundImage: "radial-gradient(oklch(0.76 0.12 82 / 0.14) 1px, transparent 1px)",
-            backgroundSize: "26px 26px",
-          }}
+    <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
+      {/* ── Visual panel ─────────────────────── */}
+      <div className="relative hidden flex-col justify-between overflow-hidden bg-seal p-12 text-primary-foreground lg:flex">
+        <img
+          src={heroVisual}
+          alt=""
+          width={1600}
+          height={912}
+          className="absolute inset-0 h-full w-full object-cover opacity-45"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary-deep via-primary/60 to-primary/40" />
         <div className="relative flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-gold/15 ring-1 ring-gold/40">
-            <Landmark className="h-4.5 w-4.5 text-gold" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-gold/15 ring-1 ring-gold/40">
+            <Landmark className="h-5 w-5 text-gold" />
           </div>
-          <p className="font-serif text-lg">Digital Evaluation System</p>
+          <div>
+            <p className="font-serif text-lg leading-tight">Digital Evaluation System</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-white/50">Office of the Controller</p>
+          </div>
         </div>
         <div className="relative">
           <p className="eyebrow text-gold">Confidential</p>
-          <p className="mt-4 max-w-md font-serif text-3xl leading-snug">
+          <p className="mt-4 max-w-md font-serif text-4xl leading-snug">
             Access to answer scripts is restricted, anonymised and recorded.
           </p>
-          <div className="gold-line mt-8 w-24" />
+          <ul className="mt-8 space-y-3">
+            {ASSURANCES.map(({ icon: Icon, text }) => (
+              <li key={text} className="flex items-center gap-3 text-sm text-white/75">
+                <Icon className="h-4 w-4 text-gold" />
+                {text}
+              </li>
+            ))}
+          </ul>
         </div>
-        <p className="relative text-xs text-primary-foreground/60">The first account created becomes the Controller (admin).</p>
+        <p className="relative text-xs text-white/50">The first account created becomes the Controller (admin).</p>
       </div>
-      <div className="flex items-center justify-center p-8">
+
+      {/* ── Form panel ───────────────────────── */}
+      <div className="flex items-center justify-center bg-background p-8">
         <form onSubmit={submit} className="w-full max-w-sm animate-fade-up space-y-5">
+          <div className="mb-2 flex items-center gap-3 lg:hidden">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/5 ring-1 ring-primary/15">
+              <Landmark className="h-4.5 w-4.5 text-primary" />
+            </div>
+            <p className="font-serif text-lg">Digital Evaluation System</p>
+          </div>
           <div>
-            <h1 className="text-2xl">{mode === "in" ? "Sign in" : "Create account"}</h1>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-              New accounts start as students; the Controller assigns staff roles.
+            <h1 className="text-3xl">{mode === "in" ? "Welcome back" : "Create account"}</h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {mode === "in"
+                ? "Sign in to continue to the evaluation portal."
+                : "New accounts start as students; the Controller assigns staff roles."}
             </p>
           </div>
           {mode === "up" && (
             <div className="space-y-1.5">
               <Label htmlFor="name">Full name</Label>
-              <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
+              <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} className="h-10" />
             </div>
           )}
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-10" />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="pw">Password</Label>
-            <Input id="pw" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input id="pw" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="h-10" />
           </div>
-          <Button type="submit" className="w-full" disabled={busy}>
+          <Button type="submit" size="lg" className="w-full" disabled={busy}>
             {mode === "in" ? "Sign in" : "Create account"}
           </Button>
           <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -123,7 +152,7 @@ function AuthPage() {
             or
             <span className="h-px flex-1 bg-border" />
           </div>
-          <Button type="button" variant="outline" className="w-full" onClick={google}>
+          <Button type="button" variant="outline" size="lg" className="w-full" onClick={google}>
             Continue with Google
           </Button>
           <button type="button" className="w-full text-sm text-primary hover:underline" onClick={() => setMode(mode === "in" ? "up" : "in")}>
