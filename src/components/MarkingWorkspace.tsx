@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useMe } from "@/hooks/use-auth";
 import { ScriptViewer } from "@/components/ScriptViewer";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ type Rec = Record<string, string>;
 export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "evaluate" | "moderate" }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const { data: me } = useMe();
   const { data, isLoading } = useQuery({
     queryKey: ["marking", scriptId],
     queryFn: async () => {
