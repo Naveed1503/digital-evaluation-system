@@ -12,10 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedResultsRouteImport } from './routes/_authenticated/results'
+import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedEvaluateIndexRouteImport } from './routes/_authenticated/evaluate.index'
 import { Route as AuthenticatedEvaluateScriptIdRouteImport } from './routes/_authenticated/evaluate.$scriptId'
 import { Route as AuthenticatedModerateIndexRouteImport } from './routes/_authenticated/moderate.index'
 import { Route as AuthenticatedModerateScriptIdRouteImport } from './routes/_authenticated/moderate.$scriptId'
+import { Route as AuthenticatedAdminExamsIndexRouteImport } from './routes/_authenticated/admin.exams.index'
+import { Route as AuthenticatedAdminExamsExamIdRouteImport } from './routes/_authenticated/admin.exams.$examId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,6 +36,26 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedResultsRoute = AuthenticatedResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminAuditRoute = AuthenticatedAdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedEvaluateIndexRoute =
   AuthenticatedEvaluateIndexRouteImport.update({
@@ -55,59 +81,107 @@ const AuthenticatedModerateScriptIdRoute =
     path: '/moderate/$scriptId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminExamsIndexRoute =
+  AuthenticatedAdminExamsIndexRouteImport.update({
+    id: '/admin/exams/',
+    path: '/admin/exams/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminExamsExamIdRoute =
+  AuthenticatedAdminExamsExamIdRouteImport.update({
+    id: '/admin/exams/$examId',
+    path: '/admin/exams/$examId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/results': typeof AuthenticatedResultsRoute
+  '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/evaluate/$scriptId': typeof AuthenticatedEvaluateScriptIdRoute
   '/moderate/$scriptId': typeof AuthenticatedModerateScriptIdRoute
   '/evaluate/': typeof AuthenticatedEvaluateIndexRoute
   '/moderate/': typeof AuthenticatedModerateIndexRoute
+  '/admin/exams/$examId': typeof AuthenticatedAdminExamsExamIdRoute
+  '/admin/exams/': typeof AuthenticatedAdminExamsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/results': typeof AuthenticatedResultsRoute
+  '/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/evaluate/$scriptId': typeof AuthenticatedEvaluateScriptIdRoute
   '/moderate/$scriptId': typeof AuthenticatedModerateScriptIdRoute
   '/evaluate': typeof AuthenticatedEvaluateIndexRoute
   '/moderate': typeof AuthenticatedModerateIndexRoute
+  '/admin/exams/$examId': typeof AuthenticatedAdminExamsExamIdRoute
+  '/admin/exams': typeof AuthenticatedAdminExamsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/results': typeof AuthenticatedResultsRoute
+  '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/evaluate/$scriptId': typeof AuthenticatedEvaluateScriptIdRoute
   '/_authenticated/moderate/$scriptId': typeof AuthenticatedModerateScriptIdRoute
   '/_authenticated/evaluate/': typeof AuthenticatedEvaluateIndexRoute
   '/_authenticated/moderate/': typeof AuthenticatedModerateIndexRoute
+  '/_authenticated/admin/exams/$examId': typeof AuthenticatedAdminExamsExamIdRoute
+  '/_authenticated/admin/exams/': typeof AuthenticatedAdminExamsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/dashboard'
+    | '/results'
+    | '/admin/audit'
+    | '/admin/users'
     | '/evaluate/$scriptId'
     | '/moderate/$scriptId'
     | '/evaluate/'
     | '/moderate/'
+    | '/admin/exams/$examId'
+    | '/admin/exams/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/dashboard'
+    | '/results'
+    | '/admin/audit'
+    | '/admin/users'
     | '/evaluate/$scriptId'
     | '/moderate/$scriptId'
     | '/evaluate'
     | '/moderate'
+    | '/admin/exams/$examId'
+    | '/admin/exams'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/results'
+    | '/_authenticated/admin/audit'
+    | '/_authenticated/admin/users'
     | '/_authenticated/evaluate/$scriptId'
     | '/_authenticated/moderate/$scriptId'
     | '/_authenticated/evaluate/'
     | '/_authenticated/moderate/'
+    | '/_authenticated/admin/exams/$examId'
+    | '/_authenticated/admin/exams/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -139,6 +213,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/results': {
+      id: '/_authenticated/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof AuthenticatedResultsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/audit': {
+      id: '/_authenticated/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AuthenticatedAdminAuditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/evaluate/': {
       id: '/_authenticated/evaluate/'
       path: '/evaluate'
@@ -167,21 +269,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedModerateScriptIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/exams/': {
+      id: '/_authenticated/admin/exams/'
+      path: '/admin/exams'
+      fullPath: '/admin/exams/'
+      preLoaderRoute: typeof AuthenticatedAdminExamsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/exams/$examId': {
+      id: '/_authenticated/admin/exams/$examId'
+      path: '/admin/exams/$examId'
+      fullPath: '/admin/exams/$examId'
+      preLoaderRoute: typeof AuthenticatedAdminExamsExamIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedResultsRoute: typeof AuthenticatedResultsRoute
+  AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedEvaluateScriptIdRoute: typeof AuthenticatedEvaluateScriptIdRoute
   AuthenticatedModerateScriptIdRoute: typeof AuthenticatedModerateScriptIdRoute
   AuthenticatedEvaluateIndexRoute: typeof AuthenticatedEvaluateIndexRoute
   AuthenticatedModerateIndexRoute: typeof AuthenticatedModerateIndexRoute
+  AuthenticatedAdminExamsExamIdRoute: typeof AuthenticatedAdminExamsExamIdRoute
+  AuthenticatedAdminExamsIndexRoute: typeof AuthenticatedAdminExamsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedResultsRoute: AuthenticatedResultsRoute,
+  AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedEvaluateScriptIdRoute: AuthenticatedEvaluateScriptIdRoute,
   AuthenticatedModerateScriptIdRoute: AuthenticatedModerateScriptIdRoute,
   AuthenticatedEvaluateIndexRoute: AuthenticatedEvaluateIndexRoute,
   AuthenticatedModerateIndexRoute: AuthenticatedModerateIndexRoute,
+  AuthenticatedAdminExamsExamIdRoute: AuthenticatedAdminExamsExamIdRoute,
+  AuthenticatedAdminExamsIndexRoute: AuthenticatedAdminExamsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
