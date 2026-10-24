@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Landmark } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -69,21 +70,34 @@ function AuthPage() {
 
   return (
     <div className="grid min-h-screen md:grid-cols-2">
-      <div className="hidden flex-col justify-between bg-seal p-12 text-primary-foreground md:flex">
-        <p className="font-serif text-lg">Digital Evaluation System</p>
-        <div>
+      <div className="relative hidden flex-col justify-between overflow-hidden bg-seal p-12 text-primary-foreground md:flex">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.35]"
+          style={{
+            backgroundImage: "radial-gradient(oklch(0.76 0.12 82 / 0.14) 1px, transparent 1px)",
+            backgroundSize: "26px 26px",
+          }}
+        />
+        <div className="relative flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-gold/15 ring-1 ring-gold/40">
+            <Landmark className="h-4.5 w-4.5 text-gold" />
+          </div>
+          <p className="font-serif text-lg">Digital Evaluation System</p>
+        </div>
+        <div className="relative">
           <p className="eyebrow text-gold">Confidential</p>
-          <p className="mt-3 font-serif text-3xl leading-snug">
+          <p className="mt-4 max-w-md font-serif text-3xl leading-snug">
             Access to answer scripts is restricted, anonymised and recorded.
           </p>
+          <div className="gold-line mt-8 w-24" />
         </div>
-        <p className="text-xs text-primary-foreground/60">The first account created becomes the Controller (admin).</p>
+        <p className="relative text-xs text-primary-foreground/60">The first account created becomes the Controller (admin).</p>
       </div>
       <div className="flex items-center justify-center p-8">
-        <form onSubmit={submit} className="w-full max-w-sm space-y-5">
+        <form onSubmit={submit} className="w-full max-w-sm animate-fade-up space-y-5">
           <div>
             <h1 className="text-2xl">{mode === "in" ? "Sign in" : "Create account"}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
               New accounts start as students; the Controller assigns staff roles.
             </p>
           </div>
@@ -104,6 +118,11 @@ function AuthPage() {
           <Button type="submit" className="w-full" disabled={busy}>
             {mode === "in" ? "Sign in" : "Create account"}
           </Button>
+          <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            or
+            <span className="h-px flex-1 bg-border" />
+          </div>
           <Button type="button" variant="outline" className="w-full" onClick={google}>
             Continue with Google
           </Button>
