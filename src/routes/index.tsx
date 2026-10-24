@@ -1,6 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Landmark, ArrowRight, ShieldCheck, FileStack, PenLine, Stamp, GraduationCap } from "lucide-react";
+import {
+  Landmark,
+  ArrowRight,
+  ShieldCheck,
+  FileStack,
+  PenLine,
+  Stamp,
+  GraduationCap,
+  Lock,
+  Users,
+  BarChart3,
+  FileCheck2,
+  EyeOff,
+  History,
+  CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import heroVisual from "@/assets/hero-visual.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,82 +32,268 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+const STATS = [
+  ["100%", "Anonymous scripts"],
+  ["5-stage", "Digital pipeline"],
+  ["Every action", "Audit logged"],
+  ["Role-based", "Secure access"],
+];
+
+const FEATURES = [
+  {
+    icon: FileStack,
+    title: "Digital script intake",
+    desc: "Scanned answer scripts are uploaded once, assigned anonymous codes, and stored in a private vault — never exposed by name.",
+  },
+  {
+    icon: Users,
+    title: "Smart allocation",
+    desc: "One click distributes scripts evenly across evaluators and moderators. Reassignment takes seconds, with full history.",
+  },
+  {
+    icon: PenLine,
+    title: "On-screen valuation",
+    desc: "Question-wise marking with validated limits, per-question remarks, draft saving and automatic totals.",
+  },
+  {
+    icon: Stamp,
+    title: "Moderation with accountability",
+    desc: "Every mark change demands a reason and is recorded in a permanent revision trail — who, when, old value, new value.",
+  },
+  {
+    icon: BarChart3,
+    title: "Instant tabulation",
+    desc: "Totals, percentages, grades, pass rates and grade distribution compute themselves. Export to CSV in one click.",
+  },
+  {
+    icon: GraduationCap,
+    title: "Student result portal",
+    desc: "Students see only their own published results — marks, grade and verdict — nothing else, ever.",
+  },
+];
+
 const STEPS = [
-  { n: "I", t: "Script intake", d: "Scanned answer scripts are uploaded and given anonymous codes.", icon: FileStack },
-  { n: "II", t: "Allocation", d: "Scripts are distributed to evaluators and moderators automatically.", icon: ShieldCheck },
-  { n: "III", t: "Online valuation", d: "Question-wise marking with validated limits and auto-totals.", icon: PenLine },
-  { n: "IV", t: "Moderation", d: "A second examiner reviews and confirms or adjusts marks.", icon: Stamp },
-  { n: "V", t: "Declaration", d: "Results are tabulated, graded and published to students.", icon: GraduationCap },
+  ["I", "Script intake", "Scanned scripts uploaded and anonymised."],
+  ["II", "Allocation", "Automatic distribution to examiners."],
+  ["III", "Valuation", "Question-wise marking with auto-totals."],
+  ["IV", "Moderation", "Second review with reason tracking."],
+  ["V", "Declaration", "Results graded and published."],
+];
+
+const TRUST = [
+  { icon: EyeOff, text: "Evaluators never see student identities — only anonymous script codes." },
+  { icon: Lock, text: "Scripts live in a private store, reachable only by the assigned examiner." },
+  { icon: History, text: "Every assignment, mark, change and publication is written to the audit trail." },
+  { icon: FileCheck2, text: "Mark limits are validated server-side; nothing out of range can be submitted." },
 ];
 
 function Index() {
   return (
-    <div className="min-h-screen">
-      <header className="relative overflow-hidden bg-seal text-primary-foreground">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.35]"
-          style={{
-            backgroundImage:
-              "radial-gradient(oklch(0.76 0.12 82 / 0.14) 1px, transparent 1px)",
-            backgroundSize: "26px 26px",
-          }}
-        />
-        <div className="relative mx-auto flex max-w-6xl items-center justify-between px-8 py-5">
+    <div className="min-h-screen bg-background">
+      {/* ── Nav ─────────────────────────────── */}
+      <nav className="fixed inset-x-0 top-0 z-50 glass-dark border-b border-white/10">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-gold/15 ring-1 ring-gold/40">
               <Landmark className="h-4.5 w-4.5 text-gold" />
             </div>
-            <p className="font-serif text-lg">Digital Evaluation System</p>
+            <div>
+              <p className="font-serif text-[15px] leading-tight text-white">Digital Evaluation System</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-white/50">Office of the Controller</p>
+            </div>
           </div>
-          <Button asChild variant="outline" size="sm" className="border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
-            <Link to="/auth">Sign in</Link>
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button asChild variant="ghost" size="sm" className="text-white/80 hover:bg-white/10 hover:text-white">
+              <Link to="/auth">Sign in</Link>
+            </Button>
+            <Button asChild size="sm" variant="gold">
+              <Link to="/auth">Enter portal</Link>
+            </Button>
+          </div>
         </div>
-        <div className="relative mx-auto max-w-6xl px-8 pb-28 pt-20">
-          <p className="eyebrow animate-fade-up text-gold">Office of the Controller of Examinations</p>
-          <h1 className="mt-5 max-w-3xl animate-fade-up text-5xl leading-[1.15] [animation-delay:80ms]">
-            Every answer script, evaluated with care, accuracy and confidentiality.
-          </h1>
-          <p className="mt-6 max-w-2xl animate-fade-up text-lg leading-relaxed text-primary-foreground/75 [animation-delay:160ms]">
-            One secure place for script distribution, on-screen marking, moderation and result declaration.
+      </nav>
+
+      {/* ── Hero ────────────────────────────── */}
+      <header className="relative overflow-hidden bg-seal pt-32 text-primary-foreground">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: "radial-gradient(oklch(0.76 0.12 82 / 0.12) 1px, transparent 1px)",
+            backgroundSize: "26px 26px",
+          }}
+        />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 lg:grid-cols-[1.05fr_1fr]">
+          <div>
+            <div className="inline-flex animate-fade-up items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-medium tracking-wide text-gold">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Confidential · Anonymised · Fully audited
+            </div>
+            <h1 className="mt-6 animate-fade-up text-5xl leading-[1.12] [animation-delay:80ms] lg:text-6xl">
+              Examination evaluation,{" "}
+              <span className="text-gradient-gold">reimagined</span> for the digital era.
+            </h1>
+            <p className="mt-6 max-w-xl animate-fade-up text-lg leading-relaxed text-primary-foreground/70 [animation-delay:160ms]">
+              From script intake to result declaration — one secure platform for distribution,
+              on-screen marking, moderation and tabulation. Faster results, zero paper, complete accountability.
+            </p>
+            <div className="mt-9 flex animate-fade-up flex-wrap items-center gap-4 [animation-delay:240ms]">
+              <Button asChild size="lg" variant="gold">
+                <Link to="/auth">
+                  Enter the portal
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white">
+                <a href="#process">See how it works</a>
+              </Button>
+            </div>
+          </div>
+          <div className="relative animate-fade-up [animation-delay:200ms]">
+            <div className="absolute -inset-6 rounded-3xl bg-gold/15 blur-3xl" />
+            <div className="animate-float relative overflow-hidden rounded-2xl border border-white/15 shadow-lift">
+              <img
+                src={heroVisual}
+                alt="Secure digital evaluation platform visual"
+                width={1600}
+                height={912}
+                className="h-auto w-full"
+              />
+              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
+            </div>
+          </div>
+        </div>
+
+        {/* Stats strip */}
+        <div className="relative border-t border-white/10">
+          <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-white/10 md:grid-cols-4">
+            {STATS.map(([v, l]) => (
+              <div key={l} className="px-6 py-7 text-center">
+                <p className="font-serif text-2xl text-gold">{v}</p>
+                <p className="mt-1 text-xs uppercase tracking-[0.16em] text-white/55">{l}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      {/* ── Features ────────────────────────── */}
+      <section className="mx-auto max-w-7xl px-6 py-24">
+        <div className="max-w-2xl">
+          <p className="eyebrow text-gold">Capabilities</p>
+          <h2 className="mt-3 text-4xl leading-tight">Everything the examination cell needs, in one place</h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Built for controllers, evaluators, moderators and students — each with exactly the access they need.
           </p>
-          <div className="mt-10 flex animate-fade-up items-center gap-4 [animation-delay:240ms]">
-            <Button asChild size="lg" variant="gold">
+        </div>
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="card-hover group rounded-xl border bg-card p-7 shadow-card">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/5 ring-1 ring-primary/10 transition-colors group-hover:bg-gold/10 group-hover:ring-gold/30">
+                <Icon className="h-5 w-5 text-primary transition-colors group-hover:text-gold" />
+              </div>
+              <p className="mt-5 font-serif text-lg">{title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Process ─────────────────────────── */}
+      <section id="process" className="border-y border-border bg-secondary/40 py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow text-gold">The process</p>
+              <h2 className="mt-3 text-4xl">Five stages, fully digital</h2>
+            </div>
+            <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+              A script moves through a controlled pipeline. Its status is visible to the Controller at every step.
+            </p>
+          </div>
+          <ol className="mt-14 grid gap-5 md:grid-cols-5">
+            {STEPS.map(([n, t, d], i) => (
+              <li key={n} className="card-hover relative rounded-xl border bg-card p-6 shadow-card">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary font-serif text-sm text-primary-foreground">
+                    {n}
+                  </span>
+                  {i < STEPS.length - 1 && (
+                    <ArrowRight className="h-4 w-4 text-muted-foreground/40 max-md:hidden" />
+                  )}
+                </div>
+                <p className="mt-4 font-semibold">{t}</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{d}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ── Trust / security ────────────────── */}
+      <section className="mx-auto max-w-7xl px-6 py-24">
+        <div className="grid items-center gap-14 lg:grid-cols-2">
+          <div>
+            <p className="eyebrow text-gold">Confidentiality by design</p>
+            <h2 className="mt-3 text-4xl leading-tight">Security isn't a feature. It's the foundation.</h2>
+            <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+              Examination work demands absolute trust. The system enforces it structurally — not by policy, but by design.
+            </p>
+            <Button asChild size="lg" className="mt-8">
               <Link to="/auth">
-                Enter the portal
+                Access the portal
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <p className="text-xs text-primary-foreground/50">Access is restricted and every action is logged.</p>
           </div>
+          <ul className="space-y-4">
+            {TRUST.map(({ icon: Icon, text }) => (
+              <li key={text} className="flex items-start gap-4 rounded-xl border bg-card p-5 shadow-card">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gold/10 ring-1 ring-gold/25">
+                  <Icon className="h-5 w-5 text-gold" />
+                </div>
+                <p className="pt-1.5 text-sm leading-relaxed text-foreground/85">{text}</p>
+              </li>
+            ))}
+          </ul>
         </div>
-        <div className="gold-line relative" />
-      </header>
-
-      <section className="mx-auto max-w-6xl px-8 py-20">
-        <p className="eyebrow text-gold">The process</p>
-        <h2 className="mt-2 text-3xl">Five stages, fully digital</h2>
-        <ol className="mt-10 grid gap-5 md:grid-cols-5">
-          {STEPS.map(({ n, t, d, icon: Icon }) => (
-            <li
-              key={n}
-              className="card-hover group rounded-lg border bg-card p-5 shadow-card"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-serif text-2xl text-gold">{n}</span>
-                <Icon className="h-4 w-4 text-muted-foreground/50 transition-colors group-hover:text-gold" />
-              </div>
-              <p className="mt-4 font-semibold">{t}</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{d}</p>
-            </li>
-          ))}
-        </ol>
       </section>
 
-      <footer className="border-t border-border py-8">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-8 text-xs text-muted-foreground">
-          <p>Confidential examination system · Access is logged</p>
-          <p className="font-serif">Digital Evaluation System</p>
+      {/* ── CTA banner ──────────────────────── */}
+      <section className="relative overflow-hidden bg-seal py-20 text-center text-primary-foreground">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: "radial-gradient(oklch(0.76 0.12 82 / 0.12) 1px, transparent 1px)",
+            backgroundSize: "26px 26px",
+          }}
+        />
+        <div className="relative mx-auto max-w-3xl px-6">
+          <CheckCircle2 className="mx-auto h-10 w-10 text-gold" />
+          <h2 className="mt-6 text-4xl leading-tight">Ready to declare results on time, every time?</h2>
+          <p className="mx-auto mt-4 max-w-xl text-primary-foreground/70">
+            Sign in with your institutional account. Staff roles are assigned by the Controller of Examinations.
+          </p>
+          <Button asChild size="lg" variant="gold" className="mt-8">
+            <Link to="/auth">
+              Enter the portal
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* ── Footer ──────────────────────────── */}
+      <footer className="border-t border-border bg-card">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/5 ring-1 ring-primary/15">
+              <Landmark className="h-4 w-4 text-primary" />
+            </div>
+            <p className="font-serif text-sm">Digital Evaluation System</p>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Confidential examination system · All access is logged and audited
+          </p>
         </div>
       </footer>
     </div>

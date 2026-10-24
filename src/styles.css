@@ -199,6 +199,29 @@
 @utility animate-fade-up {
   animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+@utility animate-float {
+  animation: float 7s ease-in-out infinite;
+}
+@utility glass-dark {
+  background: oklch(0.28 0.078 264 / 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+@utility text-gradient-gold {
+  background: linear-gradient(100deg, oklch(0.85 0.1 85), oklch(0.72 0.125 80) 55%, oklch(0.82 0.09 88));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
 
 @keyframes fade-up {
   from {
