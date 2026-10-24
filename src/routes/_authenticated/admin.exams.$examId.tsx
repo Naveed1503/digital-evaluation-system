@@ -64,14 +64,14 @@ function ExamDetail() {
 
   async function autoAssign() {
     const { data: n, error } = await supabase.rpc("auto_assign", { _exam_id: examId });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(`${n} scripts allocated`);
     refresh();
   }
   async function publish() {
     if (!confirm("Publish results? Marks will be locked and visible to students.")) return;
     const { error } = await supabase.rpc("publish_results", { _exam_id: examId });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Results published");
     refresh();
   }
@@ -200,13 +200,13 @@ function QuestionsPanel({ examId, questions, editable, onChange, maxTotal }: { e
     e.preventDefault();
     const number = (questions.at(-1)?.number ?? 0) + 1;
     const { error } = await supabase.from("questions").insert({ exam_id: examId, number, label, max_marks: Number(max) });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setLabel("");
     onChange();
   }
   async function remove(id: string) {
     const { error } = await supabase.from("questions").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     onChange();
   }
   return (
@@ -246,7 +246,7 @@ function ScriptIntake({ examId, questions, students, onDone }: { examId: string;
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
 
-  async function createScript(opts: { studentId?: string; file?: File | null }) {
+  async function createScript(opts: { studentId?: string | undefined; file?: File | null }) {
     const { data: s, error } = await supabase
       .from("scripts")
       .insert({
@@ -273,7 +273,7 @@ function ScriptIntake({ examId, questions, students, onDone }: { examId: string;
 
   async function upload(e: React.FormEvent) {
     e.preventDefault();
-    if (!file) return toast.error("Choose a scanned PDF or image");
+    if (!file) { toast.error("Choose a scanned PDF or image"); return; }
     setBusy(true);
     try {
       await createScript({ studentId: student || undefined, file });
@@ -284,7 +284,7 @@ function ScriptIntake({ examId, questions, students, onDone }: { examId: string;
   }
 
   async function samples() {
-    if (!questions.length) return toast.error("Add questions first");
+    if (!questions.length) { toast.error("Add questions first"); return; }
     setBusy(true);
     try {
       const targets = students.length ? students.map((s) => s.id) : [undefined, undefined, undefined];

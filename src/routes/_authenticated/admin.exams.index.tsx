@@ -33,7 +33,7 @@ function ExamsPage() {
   async function create(e: React.FormEvent) {
     e.preventDefault();
     const { error } = await supabase.from("exams").insert({ ...form, exam_date: form.exam_date || null });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Examination created");
     setOpen(false);
     setForm({ code: "", title: "", course: "", exam_date: "" });

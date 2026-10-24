@@ -63,10 +63,10 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
     const payload: Record<string, number> = {};
     for (const q of questions) {
       const raw = values[q.id];
-      if (raw === "" || raw == null) return toast.error(`Enter marks for Q${q.number}`);
+      if (raw === "" || raw == null) { toast.error(`Enter marks for Q${q.number}`); return; }
       const n = Number(raw);
       if (Number.isNaN(n) || n < 0 || n > Number(q.max_marks))
-        return toast.error(`Q${q.number}: marks must be between 0 and ${q.max_marks}`);
+        { toast.error(`Q${q.number}: marks must be between 0 and ${q.max_marks}`); return; }
       payload[q.id] = n;
     }
     setBusy(true);
@@ -75,7 +75,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
         ? await supabase.rpc("submit_evaluation", { _script_id: scriptId, _marks: payload })
         : await supabase.rpc("submit_moderation", { _script_id: scriptId, _marks: payload, _remark: remark });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(mode === "evaluate" ? "Valuation submitted" : "Moderation recorded");
     qc.invalidateQueries();
     navigate({ to: mode === "evaluate" ? "/evaluate" : "/moderate" });

@@ -29,7 +29,7 @@ function UsersPage() {
     const { error } = on
       ? await supabase.from("user_roles").insert({ user_id: userId, role })
       : await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", role);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["users"] });
   }
 

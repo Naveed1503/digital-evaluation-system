@@ -14,7 +14,7 @@ export function percentage(total: number, max: number): number {
 }
 
 export function gradeFor(pct: number) {
-  return GRADE_BANDS.find((b) => pct >= b.min) ?? GRADE_BANDS[GRADE_BANDS.length - 1];
+  return GRADE_BANDS.find((b) => pct >= b.min) ?? GRADE_BANDS[6];
 }
 
 /** Final marks: moderated marks win when present, otherwise evaluator marks. */
