@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Landmark } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -117,6 +118,11 @@ function AuthPage() {
           <Button type="submit" className="w-full" disabled={busy}>
             {mode === "in" ? "Sign in" : "Create account"}
           </Button>
+          <div className="flex items-center gap-3 text-[11px] uppercase tracking-widest text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            or
+            <span className="h-px flex-1 bg-border" />
+          </div>
           <Button type="button" variant="outline" className="w-full" onClick={google}>
             Continue with Google
           </Button>
