@@ -329,6 +329,7 @@ export type Database = {
     }
     Functions: {
       auto_assign: { Args: { _exam_id: string }; Returns: number }
+      can_see_exam: { Args: { _exam_id: string }; Returns: boolean }
       can_see_script: { Args: { _script_id: string }; Returns: boolean }
       has_role: {
         Args: {
