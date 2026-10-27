@@ -15,6 +15,13 @@
       "when": 1792818760329,
       "tag": "0001_drafts_reasons_reassign",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793122362944,
+      "tag": "0002_restrict_exam_and_question_reads",
+      "breakpoints": true
     }
   ]
 }
