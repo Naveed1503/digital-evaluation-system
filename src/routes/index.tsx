@@ -91,19 +91,19 @@ function Index() {
   return (
     <div className="min-h-screen bg-background">
       {/* ── Nav ─────────────────────────────── */}
-      <nav className="fixed inset-x-0 top-0 z-50 glass-dark border-b border-white/10">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-gold/15 ring-1 ring-gold/40">
+      <nav className="fixed inset-x-0 top-0 z-50 glass-dark border-b border-primary-foreground/10">
+        <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:flex sm:justify-between sm:px-6 sm:py-3.5">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gold/15 ring-1 ring-gold/40">
               <Landmark className="h-4.5 w-4.5 text-gold" />
             </div>
             <div>
-              <p className="font-serif text-[15px] leading-tight text-white">Digital Evaluation System</p>
-              <p className="text-[10px] uppercase tracking-[0.18em] text-white/50">Office of the Controller</p>
+              <p className="font-serif text-sm leading-tight text-primary-foreground sm:text-[15px]">Digital Evaluation System</p>
+              <p className="hidden text-[10px] uppercase tracking-[0.18em] text-primary-foreground/50 sm:block">Office of the Controller</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Button asChild variant="ghost" size="sm" className="text-white/80 hover:bg-white/10 hover:text-white">
+          <div className="flex min-w-0 items-center gap-3">
+            <Button asChild variant="ghost" size="sm" className="hidden text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground sm:inline-flex">
               <Link to="/auth">Sign in</Link>
             </Button>
             <Button asChild size="sm" variant="gold">
@@ -114,7 +114,7 @@ function Index() {
       </nav>
 
       {/* ── Hero ────────────────────────────── */}
-      <header className="relative overflow-hidden bg-seal pt-32 text-primary-foreground">
+      <header className="relative overflow-hidden bg-seal pt-28 sm:pt-32 text-primary-foreground">
         <div
           className="pointer-events-none absolute inset-0 opacity-30"
           style={{
@@ -122,35 +122,35 @@ function Index() {
             backgroundSize: "26px 26px",
           }}
         />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 lg:grid-cols-[1.05fr_1fr]">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-4 pb-12 sm:gap-14 sm:px-6 sm:pb-24 lg:grid-cols-[1.05fr_1fr]">
           <div>
-            <div className="inline-flex animate-fade-up items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-medium tracking-wide text-gold">
+            <div className="inline-flex animate-fade-up items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1.5 text-[10px] sm:px-4 sm:text-xs font-medium tracking-wide text-gold">
               <ShieldCheck className="h-3.5 w-3.5" />
               Confidential · Anonymised · Fully audited
             </div>
-            <h1 className="mt-6 animate-fade-up text-5xl leading-[1.12] [animation-delay:80ms] lg:text-6xl">
+            <h1 className="mt-6 animate-fade-up text-3xl leading-[1.2] sm:text-5xl sm:leading-[1.12] [animation-delay:80ms] lg:text-6xl">
               Examination evaluation,{" "}
               <span className="text-gradient-gold">reimagined</span> for the digital era.
             </h1>
-            <p className="mt-6 max-w-xl animate-fade-up text-lg leading-relaxed text-primary-foreground/70 [animation-delay:160ms]">
+            <p className="mt-6 max-w-xl animate-fade-up text-base sm:text-lg leading-relaxed text-primary-foreground/70 [animation-delay:160ms]">
               From script intake to result declaration — one secure platform for distribution,
               on-screen marking, moderation and tabulation. Faster results, zero paper, complete accountability.
             </p>
-            <div className="mt-9 flex animate-fade-up flex-wrap items-center gap-4 [animation-delay:240ms]">
+            <div className="mt-7 grid animate-fade-up gap-3 sm:mt-9 sm:flex sm:flex-wrap sm:items-center sm:gap-4 [animation-delay:240ms]">
               <Button asChild size="lg" variant="gold">
                 <Link to="/auth">
                   Enter the portal
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white">
+              <Button asChild size="lg" variant="outline" className="border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
                 <a href="#process">See how it works</a>
               </Button>
             </div>
           </div>
           <div className="relative animate-fade-up [animation-delay:200ms]">
             <div className="absolute -inset-6 rounded-3xl bg-gold/15 blur-3xl" />
-            <div className="animate-float relative overflow-hidden rounded-2xl border border-white/15 shadow-lift">
+            <div className="animate-float relative overflow-hidden rounded-2xl border border-primary-foreground/15 shadow-lift">
               <img
                 src={heroVisual}
                 alt="Secure digital evaluation platform visual"
@@ -158,18 +158,18 @@ function Index() {
                 height={912}
                 className="h-auto w-full"
               />
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
+              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-primary-foreground/10" />
             </div>
           </div>
         </div>
 
         {/* Stats strip */}
-        <div className="relative border-t border-white/10">
-          <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-white/10 md:grid-cols-4">
+        <div className="relative border-t border-primary-foreground/10">
+          <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-primary-foreground/10 md:grid-cols-4">
             {STATS.map(([v, l]) => (
-              <div key={l} className="px-6 py-7 text-center">
-                <p className="font-serif text-2xl text-gold">{v}</p>
-                <p className="mt-1 text-xs uppercase tracking-[0.16em] text-white/55">{l}</p>
+              <div key={l} className="px-3 py-5 text-center sm:px-6 sm:py-7">
+                <p className="font-serif text-xl text-gold sm:text-2xl">{v}</p>
+                <p className="mt-1 text-[10px] uppercase tracking-wide text-primary-foreground/55 sm:text-xs">{l}</p>
               </div>
             ))}
           </div>
@@ -177,15 +177,15 @@ function Index() {
       </header>
 
       {/* ── Features ────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-24">
         <div className="max-w-2xl">
           <p className="eyebrow text-gold">Capabilities</p>
-          <h2 className="mt-3 text-4xl leading-tight">Everything the examination cell needs, in one place</h2>
+          <h2 className="mt-3 text-2xl leading-tight sm:text-4xl">Everything the examination cell needs, in one place</h2>
           <p className="mt-4 text-lg text-muted-foreground">
             Built for controllers, evaluators, moderators and students — each with exactly the access they need.
           </p>
         </div>
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid sm:mt-14 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="card-hover group rounded-xl border bg-card p-7 shadow-card">
               <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/5 ring-1 ring-primary/10 transition-colors group-hover:bg-gold/10 group-hover:ring-gold/30">
@@ -199,21 +199,21 @@ function Index() {
       </section>
 
       {/* ── Process ─────────────────────────── */}
-      <section id="process" className="border-y border-border bg-secondary/40 py-24">
-        <div className="mx-auto max-w-7xl px-6">
+      <section id="process" className="border-y border-border bg-secondary/40 py-12 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <p className="eyebrow text-gold">The process</p>
-              <h2 className="mt-3 text-4xl">Five stages, fully digital</h2>
+              <h2 className="mt-3 text-2xl sm:text-4xl">Five stages, fully digital</h2>
             </div>
             <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
               A script moves through a controlled pipeline. Its status is visible to the Controller at every step.
             </p>
           </div>
-          <ol className="mt-14 grid gap-5 md:grid-cols-5">
+          <ol className="mt-8 grid sm:mt-14 gap-5 md:grid-cols-5">
             {STEPS.map(([n, t, d], i) => (
               <li key={n} className="card-hover relative rounded-xl border bg-card p-6 shadow-card">
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 items-center gap-3">
                   <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary font-serif text-sm text-primary-foreground">
                     {n}
                   </span>
@@ -230,11 +230,11 @@ function Index() {
       </section>
 
       {/* ── Trust / security ────────────────── */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-24">
         <div className="grid items-center gap-14 lg:grid-cols-2">
           <div>
             <p className="eyebrow text-gold">Confidentiality by design</p>
-            <h2 className="mt-3 text-4xl leading-tight">Security isn't a feature. It's the foundation.</h2>
+            <h2 className="mt-3 text-2xl leading-tight sm:text-4xl">Security isn't a feature. It's the foundation.</h2>
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
               Examination work demands absolute trust. The system enforces it structurally — not by policy, but by design.
             </p>
@@ -259,7 +259,7 @@ function Index() {
       </section>
 
       {/* ── CTA banner ──────────────────────── */}
-      <section className="relative overflow-hidden bg-seal py-20 text-center text-primary-foreground">
+      <section className="relative overflow-hidden bg-seal py-12 sm:py-20 text-center text-primary-foreground">
         <div
           className="pointer-events-none absolute inset-0 opacity-30"
           style={{
@@ -269,7 +269,7 @@ function Index() {
         />
         <div className="relative mx-auto max-w-3xl px-6">
           <CheckCircle2 className="mx-auto h-10 w-10 text-gold" />
-          <h2 className="mt-6 text-4xl leading-tight">Ready to declare results on time, every time?</h2>
+          <h2 className="mt-6 text-2xl leading-tight sm:text-4xl">Ready to declare results on time, every time?</h2>
           <p className="mx-auto mt-4 max-w-xl text-primary-foreground/70">
             Sign in with your institutional account. Staff roles are assigned by the Controller of Examinations.
           </p>
@@ -285,7 +285,7 @@ function Index() {
       {/* ── Footer ──────────────────────────── */}
       <footer className="border-t border-border bg-card">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-8">
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/5 ring-1 ring-primary/15">
               <Landmark className="h-4 w-4 text-primary" />
             </div>

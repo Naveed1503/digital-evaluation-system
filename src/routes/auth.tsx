@@ -76,7 +76,7 @@ function AuthPage() {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
+    <div className="grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
       {/* ── Visual panel ─────────────────────── */}
       <div className="relative hidden flex-col justify-between overflow-hidden bg-seal p-12 text-primary-foreground lg:flex">
         <img
@@ -93,7 +93,7 @@ function AuthPage() {
           </div>
           <div>
             <p className="font-serif text-lg leading-tight">Digital Evaluation System</p>
-            <p className="text-[10px] uppercase tracking-[0.18em] text-white/50">Office of the Controller</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-primary-foreground/50">Office of the Controller</p>
           </div>
         </div>
         <div className="relative">
@@ -103,24 +103,24 @@ function AuthPage() {
           </p>
           <ul className="mt-8 space-y-3">
             {ASSURANCES.map(({ icon: Icon, text }) => (
-              <li key={text} className="flex items-center gap-3 text-sm text-white/75">
+              <li key={text} className="flex items-center gap-3 text-sm text-primary-foreground/75">
                 <Icon className="h-4 w-4 text-gold" />
                 {text}
               </li>
             ))}
           </ul>
         </div>
-        <p className="relative text-xs text-white/50">The first account created becomes the Controller (admin).</p>
+        <p className="relative text-xs text-primary-foreground/50">The first account created becomes the Controller (admin).</p>
       </div>
 
       {/* ── Form panel ───────────────────────── */}
-      <div className="flex items-center justify-center bg-background p-8">
+      <div className="flex items-center justify-center bg-background px-5 py-8 sm:p-8">
         <form onSubmit={submit} className="w-full max-w-sm animate-fade-up space-y-5">
-          <div className="mb-2 flex items-center gap-3 lg:hidden">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/5 ring-1 ring-primary/15">
+          <div className="mb-6 flex min-w-0 items-center gap-3 lg:hidden">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/5 ring-1 ring-primary/15">
               <Landmark className="h-4.5 w-4.5 text-primary" />
             </div>
-            <p className="font-serif text-lg">Digital Evaluation System</p>
+            <p className="min-w-0 font-serif text-base sm:text-lg">Digital Evaluation System</p>
           </div>
           <div>
             <h1 className="text-3xl">{mode === "in" ? "Welcome back" : "Create account"}</h1>
@@ -133,16 +133,16 @@ function AuthPage() {
           {mode === "up" && (
             <div className="space-y-1.5">
               <Label htmlFor="name">Full name</Label>
-              <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} className="h-10" />
+              <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} className="h-11 text-base" />
             </div>
           )}
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-10" />
+            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="h-11 text-base" />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="pw">Password</Label>
-            <Input id="pw" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="h-10" />
+            <Input id="pw" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="h-11 text-base" />
           </div>
           <Button type="submit" size="lg" className="w-full" disabled={busy}>
             {mode === "in" ? "Sign in" : "Create account"}
