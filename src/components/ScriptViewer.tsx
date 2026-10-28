@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 
 type Answer = { q: number; text: string };
 
@@ -40,7 +42,14 @@ export function ScriptViewer({
         {isLoading || !url ? (
           <div className="p-8 text-sm text-muted-foreground">Loading script securely…</div>
         ) : isPdf ? (
-          <iframe title="Answer script" src={url} className="h-full min-h-[70vh] w-full" />
+          <>
+            <div className="border-b border-border bg-card p-3">
+              <Button asChild variant="outline" className="w-full sm:w-auto">
+                <a href={url} target="_blank" rel="noopener noreferrer"><ExternalLink /> Open PDF</a>
+              </Button>
+            </div>
+            <iframe title="Answer script" src={url} className="h-full min-h-[50dvh] w-full sm:min-h-[70vh]" />
+          </>
         ) : (
           <div className="overflow-auto p-4">
             <img src={url} alt={`Answer script ${code}`} className="mx-auto max-w-full shadow-card" />
