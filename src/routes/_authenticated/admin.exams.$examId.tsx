@@ -15,7 +15,14 @@ import { GRADE_BANDS, finalMark, generateScriptCode, gradeFor, percentage } from
 import { makeSampleAnswers } from "@/lib/sample-answers";
 
 export const Route = createFileRoute("/_authenticated/admin/exams/$examId")({
-  head: () => ({ meta: [{ title: "Examination detail — DES" }] }),
+  head: () => ({ meta: [
+    { title: 'Examination detail — Digital Evaluation System' },
+    { name: "description", content: 'Manage question papers, script allocation, moderation and publication.' },
+    { property: "og:title", content: 'Examination detail — Digital Evaluation System' },
+    { property: "og:description", content: 'Manage question papers, script allocation, moderation and publication.' },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ExamDetail,
 });
 
@@ -126,7 +133,7 @@ function ExamDetail() {
       </div>
 
       <Tabs defaultValue="questions">
-        <TabsList>
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 sm:inline-flex sm:w-auto">
           <TabsTrigger value="questions">Question paper</TabsTrigger>
           <TabsTrigger value="scripts">Scripts & allocation</TabsTrigger>
           <TabsTrigger value="tabulation">Results</TabsTrigger>
@@ -173,7 +180,7 @@ function ExamDetail() {
         </TabsContent>
 
         <TabsContent value="revisions" className="mt-6">
-          <div className="overflow-hidden rounded-md border border-border bg-card">
+          <div className="overflow-x-auto rounded-md border border-border bg-card">
             <table className="w-full text-sm">
               <thead className="bg-muted text-left text-xs uppercase tracking-wider text-muted-foreground">
                 <tr><th className="px-4 py-3">When</th><th>Script</th><th>Q</th><th className="text-center">From → To</th><th>Reason</th><th>Moderator</th></tr>
@@ -403,16 +410,16 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
   }
   if (edit)
     return (
-      <div className="flex items-center gap-2 border-b border-border px-4 py-2">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-border px-3 py-3 sm:flex sm:px-4">
         <span className="w-8 font-semibold">Q{q.number}</span>
-        <Input className="h-8 flex-1" value={label} onChange={(e) => setLabel(e.target.value)} />
+        <Input className="h-8 min-w-0 flex-1" value={label} onChange={(e) => setLabel(e.target.value)} />
         <Input className="h-8 w-20" type="number" step="0.5" value={max} onChange={(e) => setMax(e.target.value)} />
         <Button size="sm" onClick={save}>Save</Button>
         <Button size="sm" variant="ghost" onClick={() => setEdit(false)}>Cancel</Button>
       </div>
     );
   return (
-    <div className="flex items-center justify-between border-b border-border px-4 py-3">
+    <div className="grid min-w-0 gap-2 border-b border-border px-4 py-3 sm:flex sm:items-center sm:justify-between">
       <div><span className="font-semibold">Q{q.number}</span> <span className="text-muted-foreground">{q.label}</span></div>
       <div className="flex items-center gap-3">
         <span className="font-mono">{q.max_marks} marks</span>
@@ -440,14 +447,14 @@ function QuestionsPanel({ examId, questions, editable, onChange, maxTotal }: { e
   }
   return (
     <div className="max-w-2xl">
-      <div className="overflow-hidden rounded-md border border-border bg-card">
+      <div className="overflow-x-auto rounded-md border border-border bg-card">
         {questions.map((q) => <QuestionRow key={q.id} q={q} editable={editable} onChange={onChange} />)}
         <div className="flex justify-between bg-muted px-4 py-3 font-semibold"><span>Maximum marks</span><span className="font-mono">{maxTotal}</span></div>
       </div>
       {editable ? (
-        <form onSubmit={add} className="mt-4 flex items-end gap-3">
+        <form onSubmit={add} className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-end">
           <div className="flex-1 space-y-1"><Label>Question topic (optional)</Label><Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. Stacks & queues" /></div>
-          <div className="w-28 space-y-1"><Label>Max marks</Label><Input type="number" min={0.5} step="0.5" required value={max} onChange={(e) => setMax(e.target.value)} /></div>
+          <div className="w-full space-y-1 sm:w-28"><Label>Max marks</Label><Input type="number" min={0.5} step="0.5" required value={max} onChange={(e) => setMax(e.target.value)} /></div>
           <Button type="submit">Add question</Button>
         </form>
       ) : (

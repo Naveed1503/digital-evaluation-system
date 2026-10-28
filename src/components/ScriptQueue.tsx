@@ -38,8 +38,8 @@ export function ScriptQueue({ mode }: { mode: "evaluate" | "moderate" }) {
           No scripts allocated to you yet.
         </p>
       ) : (
-        <div className="overflow-hidden rounded-md border border-border bg-card shadow-card">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-md border border-border bg-card shadow-card">
+          <table className="w-full min-w-[640px] text-sm">
             <thead className="bg-muted text-left text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th className="px-4 py-3">Script code</th>

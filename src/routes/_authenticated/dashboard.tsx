@@ -8,7 +8,14 @@ import { hasRole, useMe } from "@/hooks/use-auth";
 import { gradeFor, percentage } from "@/lib/grading";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — DES" }] }),
+  head: () => ({ meta: [
+    { title: 'Dashboard — Digital Evaluation System' },
+    { name: "description", content: 'Monitor examination progress, assignments and declared results.' },
+    { property: "og:title", content: 'Dashboard — Digital Evaluation System' },
+    { property: "og:description", content: 'Monitor examination progress, assignments and declared results.' },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: Dashboard,
 });
 
@@ -16,7 +23,7 @@ const STAGES = ["unassigned", "assigned", "evaluated", "moderated"] as const;
 
 function Stat({ label, value, hint }: { label: string; value: number | string; hint?: string }) {
   return (
-    <div className="rounded-md border border-border bg-card p-5 shadow-card">
+    <div className="min-w-0 rounded-md border border-border bg-card p-3 shadow-card sm:p-5">
       <p className="eyebrow text-muted-foreground">{label}</p>
       <p className="mt-1 font-mono text-3xl">{value}</p>
       {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
@@ -27,7 +34,7 @@ function Stat({ label, value, hint }: { label: string; value: number | string; h
 function Section({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <div className="mb-3 flex items-end justify-between">
+      <div className="mb-3 grid min-w-0 gap-2 sm:flex sm:items-end sm:justify-between">
         <h2 className="text-xl">{title}</h2>
         {action}
       </div>
@@ -108,7 +115,7 @@ function AdminPanel() {
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-5">
         <Stat label="Examinations" value={exams.length} hint={`${exams.filter((e) => e.status === "published").length} published`} />
         <Stat label="Unassigned" value={count("unassigned")} />
         <Stat label="With evaluators" value={count("assigned")} />
@@ -163,7 +170,7 @@ function AdminPanel() {
 
       <div className="grid gap-6 xl:grid-cols-2">
         <Section title="Examiner workload">
-          <div className="overflow-hidden rounded-md border border-border bg-card">
+          <div className="overflow-x-auto rounded-md border border-border bg-card">
             <table className="w-full text-sm">
               <thead className="bg-muted text-left text-xs uppercase tracking-wider text-muted-foreground">
                 <tr><th className="px-4 py-3">Examiner</th><th>Role</th><th className="text-center">Pending</th><th className="text-center">Done</th></tr>
@@ -188,7 +195,7 @@ function AdminPanel() {
         <Section title="Recent activity" action={<Link to="/admin/audit" className="text-sm text-primary hover:underline">Audit trail →</Link>}>
           <ul className="divide-y divide-border rounded-md border border-border bg-card">
             {audit.map((a) => (
-              <li key={a.id} className="flex justify-between gap-4 px-4 py-2.5 text-sm">
+              <li key={a.id} className="grid min-w-0 gap-1 break-words px-4 py-2.5 text-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-4">
                 <span><span className="font-semibold capitalize">{a.action.replace("_", " ")}</span> <span className="text-muted-foreground">by {nameOf(a.actor_id)} · {a.details}</span></span>
                 <span className="shrink-0 text-xs text-muted-foreground">{new Date(a.created_at).toLocaleString()}</span>
               </li>
@@ -229,7 +236,7 @@ function QueuePanel({ mode }: { mode: "evaluate" | "moderate" }) {
         <Stat label="Pending" value={pending.length} />
         <Stat label="Completed" value={done} hint={`of ${data.length} allocated`} />
         {mode === "moderate" ? <Stat label="Still with evaluators" value={waiting} /> : (
-          <div className="rounded-md border border-border bg-card p-5 shadow-card">
+          <div className="min-w-0 rounded-md border border-border bg-card p-3 shadow-card sm:p-5">
             <p className="eyebrow text-muted-foreground">Progress</p>
             <div className="mt-4"><Bar done={done} total={data.length} /></div>
             <p className="mt-2 text-xs text-muted-foreground">{data.length ? Math.round((done / data.length) * 100) : 0}% complete</p>
@@ -240,7 +247,7 @@ function QueuePanel({ mode }: { mode: "evaluate" | "moderate" }) {
         {pending.slice(0, 6).map((s) => {
           const ex = s.exams as { code: string; title: string } | null;
           return (
-            <li key={s.id} className="flex items-center justify-between px-4 py-3 text-sm">
+            <li key={s.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 break-words px-4 py-3 text-sm">
               <span><span className="font-mono">{s.code}</span> <span className="text-muted-foreground">· {ex?.code} {ex?.title}</span></span>
               <Button asChild size="sm">
                 <Link to={mode === "evaluate" ? "/evaluate/$scriptId" : "/moderate/$scriptId"} params={{ scriptId: s.id }}>
@@ -287,7 +294,7 @@ function StudentPanel() {
             const total = Number(s.final_total ?? s.evaluator_total ?? 0);
             const pct = percentage(total, s.max);
             return (
-              <Link key={s.id} to="/results" className="rounded-md border border-border bg-card p-5 shadow-card hover:border-primary">
+              <Link key={s.id} to="/results" className="min-w-0 rounded-md border border-border bg-card p-3 shadow-card sm:p-5 hover:border-primary">
                 <p className="font-mono text-sm text-gold">{ex?.code}</p>
                 <p className="font-serif text-lg">{ex?.title}</p>
                 <div className="mt-3 flex items-baseline justify-between">

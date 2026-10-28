@@ -16,16 +16,17 @@ export function ScriptViewer({
     queryKey: ["signed", filePath],
     enabled: !!filePath,
     queryFn: async () => {
+      if (!filePath) throw new Error("No script file available");
       const { data, error } = await supabase.storage
         .from("answer-scripts")
-        .createSignedUrl(filePath!, 60 * 30);
+        .createSignedUrl(filePath, 60 * 30);
       if (error) throw error;
       return data.signedUrl;
     },
   });
 
   const header = (
-    <div className="flex items-center justify-between border-b border-border bg-card px-4 py-2">
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border bg-card px-4 py-2">
       <span className="eyebrow text-muted-foreground">Answer Script</span>
       <span className="font-mono text-sm text-foreground">{code}</span>
     </div>
@@ -34,7 +35,7 @@ export function ScriptViewer({
   if (filePath) {
     const isPdf = filePath.toLowerCase().endsWith(".pdf");
     return (
-      <div className="flex h-full flex-col overflow-hidden rounded-md border border-border bg-muted">
+      <div className="flex h-full min-w-0 flex-col overflow-hidden rounded-md border border-border bg-muted">
         {header}
         {isLoading || !url ? (
           <div className="p-8 text-sm text-muted-foreground">Loading script securely…</div>
@@ -51,9 +52,9 @@ export function ScriptViewer({
 
   const answers = (Array.isArray(sampleAnswers) ? sampleAnswers : []) as Answer[];
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-md border border-border">
+    <div className="flex h-full min-w-0 flex-col overflow-hidden rounded-md border border-border">
       {header}
-      <div className="ruled-paper min-h-[70vh] overflow-auto px-10 py-6 font-serif text-[15px] text-foreground">
+      <div className="ruled-paper min-h-[70vh] overflow-auto break-words px-4 py-6 sm:px-10 font-serif text-[15px] text-foreground">
         {answers.length === 0 && <p className="text-muted-foreground">No content on this script.</p>}
         {answers.map((a) => (
           <div key={a.q} className="mb-8">

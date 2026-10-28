@@ -10,7 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/admin/exams/")({
-  head: () => ({ meta: [{ title: "Examinations — DES" }] }),
+  head: () => ({ meta: [
+    { title: 'Examinations — Digital Evaluation System' },
+    { name: "description", content: 'Manage examinations and track answer-script evaluation.' },
+    { property: "og:title", content: 'Examinations — Digital Evaluation System' },
+    { property: "og:description", content: 'Manage examinations and track answer-script evaluation.' },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ExamsPage,
 });
 

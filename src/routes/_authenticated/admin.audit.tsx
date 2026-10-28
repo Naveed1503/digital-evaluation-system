@@ -4,7 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/StatusBadge";
 
 export const Route = createFileRoute("/_authenticated/admin/audit")({
-  head: () => ({ meta: [{ title: "Audit trail — DES" }] }),
+  head: () => ({ meta: [
+    { title: 'Audit trail — Digital Evaluation System' },
+    { name: "description", content: 'Review examination assignments, valuation and publication history.' },
+    { property: "og:title", content: 'Audit trail — Digital Evaluation System' },
+    { property: "og:description", content: 'Review examination assignments, valuation and publication history.' },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AuditPage,
 });
 
@@ -24,7 +31,7 @@ function AuditPage() {
   return (
     <div>
       <PageHeader eyebrow="Transparency" title="Audit trail" />
-      <div className="overflow-hidden rounded-md border border-border bg-card">
+      <div className="overflow-x-auto rounded-md border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="bg-muted text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr><th className="px-4 py-3">When</th><th>Who</th><th>Action</th><th>Exam</th><th>Script</th><th>Details</th></tr>
