@@ -128,7 +128,7 @@
   }
   h1, h2, h3 {
     font-family: var(--font-serif);
-    letter-spacing: -0.015em;
+    letter-spacing: 0;
     text-wrap: balance;
   }
   ::selection {
@@ -237,4 +237,33 @@
 @media print {
   aside, nav, button { display: none !important; }
   main { padding: 0 !important; }
+}
+
+@media (max-width: 639px) {
+  .portal-main table {
+    min-width: 640px;
+  }
+  .portal-main article table {
+    min-width: 0;
+  }
+  .portal-main th, .portal-main td {
+    padding-right: 12px;
+  }
+  input:not([type="checkbox"]):not([type="radio"]), textarea, select {
+    font-size: 16px;
+  }
+  [role="dialog"] {
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

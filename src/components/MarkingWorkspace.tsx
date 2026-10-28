@@ -128,21 +128,21 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
 
   return (
     <div>
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-5 grid min-w-0 gap-3 sm:flex sm:items-center sm:justify-between">
         <div>
           <Link to={mode === "evaluate" ? "/evaluate" : "/moderate"} className="text-sm text-primary hover:underline">
             ← Back to queue
           </Link>
-          <h1 className="mt-1 text-2xl">
+          <h1 className="mt-1 break-words text-xl sm:text-2xl">
             {exam?.code} · <span className="font-mono text-xl">{script.code}</span>
           </h1>
           <p className="text-sm text-muted-foreground">{exam?.title}</p>
         </div>
         <StatusBadge status={script.status} />
       </div>
-      <div className="grid gap-6 xl:grid-cols-[1fr_440px]">
+      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
         <ScriptViewer code={script.code} filePath={script.file_path} sampleAnswers={script.sample_answers} />
-        <aside className="h-fit rounded-md border border-border bg-card p-5 shadow-card xl:sticky xl:top-6">
+        <aside className="h-fit rounded-md border border-border bg-card p-3 shadow-card sm:p-5 xl:sticky xl:top-6">
           <div className="flex items-center justify-between">
             <p className="eyebrow text-gold">{mode === "evaluate" ? "Valuation sheet" : "Moderation sheet"}</p>
             <span className="text-xs text-muted-foreground">{answered}/{questions.length} marked</span>
@@ -153,8 +153,8 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
               const isChanged = changed(q.id);
               return (
                 <div key={q.id} className={`rounded-sm border p-3 ${isChanged ? "border-gold bg-gold/10" : "border-border"}`}>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
+                    <div className="col-span-3 min-w-0">
                       <p className="text-sm font-semibold">Q{q.number}</p>
                       {q.label && <p className="text-xs text-muted-foreground">{q.label}</p>}
                     </div>
@@ -166,7 +166,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
                       aria-label={`Marks for question ${q.number}`}
                       value={values[q.id] ?? ""}
                       onChange={(e) => setValues((s) => ({ ...s, [q.id]: e.target.value }))}
-                      className="h-8 w-20 font-mono"
+                      className="h-11 w-20 font-mono text-base"
                     />
                     <span className="w-10 text-right font-mono text-xs text-muted-foreground">/{q.max_marks}</span>
                   </div>
@@ -178,7 +178,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
                   )}
                   {(mode === "evaluate" || isChanged) && !locked && (
                     <Input
-                      className="mt-2 h-8 text-xs"
+                      className="mt-2 h-11 text-base sm:text-sm"
                       placeholder={mode === "evaluate" ? "Remark (optional)" : "Reason for change (required)"}
                       value={notes[q.id] ?? ""}
                       onChange={(e) => setNotes((s) => ({ ...s, [q.id]: e.target.value }))}
@@ -208,7 +208,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
                 : `This script is locked for ${mode === "evaluate" ? "valuation" : "moderation"}.`}
             </p>
           ) : (
-            <div className="mt-5 flex gap-2">
+            <div className="mt-5 grid gap-2 sm:flex">
               {mode === "evaluate" && (
                 <Button variant="outline" className="flex-1" onClick={saveDraft} disabled={busy}>Save draft</Button>
               )}

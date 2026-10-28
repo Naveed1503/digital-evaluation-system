@@ -36,12 +36,12 @@ export function PageHeader({
 }) {
   return (
     <div className="mb-8 animate-fade-up">
-      <div className="flex flex-wrap items-end justify-between gap-4 pb-5">
-        <div>
+      <div className="grid min-w-0 gap-4 pb-5 sm:flex sm:items-end sm:justify-between">
+        <div className="min-w-0">
           {eyebrow && <p className="eyebrow text-gold">{eyebrow}</p>}
-          <h1 className="mt-1.5 text-3xl text-foreground">{title}</h1>
+          <h1 className="mt-1.5 break-words text-2xl text-foreground sm:text-3xl">{title}</h1>
         </div>
-        {children && <div className="flex gap-2">{children}</div>}
+        {children && <div className="flex min-w-0 flex-wrap items-center gap-2">{children}</div>}
       </div>
       <div className="gold-line" />
     </div>

@@ -7,7 +7,14 @@ import { useMe } from "@/hooks/use-auth";
 import { finalMark, gradeFor, percentage } from "@/lib/grading";
 
 export const Route = createFileRoute("/_authenticated/results")({
-  head: () => ({ meta: [{ title: "My results — DES" }] }),
+  head: () => ({ meta: [
+    { title: 'My results — Digital Evaluation System' },
+    { name: "description", content: 'View your published examination marks, percentages and grades.' },
+    { property: "og:title", content: 'My results — Digital Evaluation System' },
+    { property: "og:description", content: 'View your published examination marks, percentages and grades.' },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ResultsPage,
 });
 
@@ -54,14 +61,14 @@ function ResultsPage() {
             const pct = percentage(total, max);
             const g = gradeFor(pct);
             return (
-              <article key={script.id} className="max-w-3xl rounded-md border-2 border-primary bg-card p-8 shadow-card">
-                <div className="flex items-start justify-between border-b border-border pb-4">
+              <article key={script.id} className="max-w-3xl rounded-md border-2 border-primary bg-card p-4 shadow-card sm:p-8">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 border-b border-border pb-4">
                   <div>
                     <p className="font-mono text-sm text-gold">{exam.code}</p>
-                    <h2 className="text-2xl">{exam.title}</h2>
+                    <h2 className="break-words text-xl sm:text-2xl">{exam.title}</h2>
                     <p className="text-sm text-muted-foreground">{exam.course}</p>
                   </div>
-                  <div className="flex h-20 w-20 flex-col items-center justify-center rounded-full bg-seal text-primary-foreground">
+                  <div className="flex h-16 w-16 shrink-0 flex-col sm:h-20 sm:w-20 items-center justify-center rounded-full bg-seal text-primary-foreground">
                     <span className="font-serif text-2xl">{g.grade}</span>
                     <span className="text-[9px] uppercase tracking-wider">{g.label}</span>
                   </div>

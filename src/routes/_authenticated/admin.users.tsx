@@ -7,7 +7,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useMe, type AppRole } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/admin/users")({
-  head: () => ({ meta: [{ title: "Users & roles — DES" }] }),
+  head: () => ({ meta: [
+    { title: 'Users and roles — Digital Evaluation System' },
+    { name: "description", content: 'Manage authorized examination staff and student roles.' },
+    { property: "og:title", content: 'Users and roles — Digital Evaluation System' },
+    { property: "og:description", content: 'Manage authorized examination staff and student roles.' },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: UsersPage,
 });
 
@@ -39,7 +46,7 @@ function UsersPage() {
       <p className="mb-4 text-sm text-muted-foreground">
         People join by signing up. Tick a box to grant a role; one person may hold several.
       </p>
-      <div className="overflow-hidden rounded-md border border-border bg-card shadow-card">
+      <div className="overflow-x-auto rounded-md border border-border bg-card shadow-card">
         <table className="w-full text-sm">
           <thead className="bg-muted text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>

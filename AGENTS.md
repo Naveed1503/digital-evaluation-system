@@ -14,3 +14,4 @@
 - Student identity lives only in script_owners (admin/student readable) so evaluators and moderators see anonymous script codes only.
 - Roles are in user_roles checked via has_role(); the first account to sign up becomes admin, later ones default to student.
 - Grade bands and final-mark rule live in src/lib/grading.ts with tests next to it.
+- AppShell uses a sheet navigation below the desktop breakpoint and a persistent desktop sidebar; workflow tables scroll within their own containers so phone pages remain viewport-width.
