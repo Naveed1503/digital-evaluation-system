@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   LayoutDashboard,
   FileStack,
@@ -11,7 +11,10 @@ import {
   GraduationCap,
   LogOut,
   Landmark,
+  Menu,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe, type AppRole } from "@/hooks/use-auth";
 
@@ -31,7 +34,7 @@ function initials(name?: string | null, email?: string) {
     .split(/[\s@.]+/)
     .filter(Boolean)
     .slice(0, 2)
-    .map((p) => p[0]!.toUpperCase())
+    .map((p) => p.charAt(0).toUpperCase())
     .join("");
 }
 
@@ -40,6 +43,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const roles = me?.roles ?? [];
+  const [menuOpen, setMenuOpen] = useState(false);
 
   async function signOut() {
     await qc.cancelQueries();
@@ -48,9 +52,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     navigate({ to: "/auth", replace: true });
   }
 
-  return (
-    <div className="flex min-h-screen">
-      <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground">
+  const sidebar = (
+    <>
         <div className="flex items-center gap-3 border-b border-sidebar-border px-5 py-5">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-sidebar-primary/15 ring-1 ring-sidebar-primary/40">
             <Landmark className="h-5 w-5 text-sidebar-primary" />
@@ -67,7 +70,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link
               key={n.to}
               to={n.to}
-              className="group flex items-center gap-3 rounded-md border-l-[3px] border-transparent px-3 py-2.5 text-sm text-sidebar-foreground/85 transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              onClick={() => setMenuOpen(false)}
+              className="group flex min-h-11 items-center gap-3 rounded-md border-l-[3px] border-transparent px-3 py-2.5 text-sm text-sidebar-foreground/85 transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               activeProps={{
                 className:
                   "bg-sidebar-accent text-sidebar-accent-foreground font-semibold shadow-sm border-sidebar-primary",
@@ -91,17 +95,42 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {roles.join(" · ")}
               </p>
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={signOut}
               title="Sign out"
-              className="rounded-md p-2 text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-primary"
+              aria-label="Sign out"
+              className="shrink-0 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-primary"
             >
               <LogOut className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
         </div>
-      </aside>
-      <main className="min-w-0 flex-1 px-10 py-8">{children}</main>
+    </>
+  );
+
+  return (
+    <div className="min-h-dvh lg:flex">
+      <header className="sticky top-0 z-40 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-sidebar-border bg-sidebar px-4 py-3 text-sidebar-foreground lg:hidden">
+        <Link to="/dashboard" className="flex min-w-0 items-center gap-2.5">
+          <Landmark className="h-5 w-5 shrink-0 text-sidebar-primary" />
+          <span className="min-w-0 font-serif text-sm leading-snug">Digital Evaluation System</span>
+        </Link>
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Open navigation" className="h-11 w-11 shrink-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" aria-describedby={undefined} className="flex w-[min(20rem,88vw)] flex-col gap-0 border-sidebar-border bg-sidebar p-0 text-sidebar-foreground">
+            <SheetTitle className="sr-only">Portal navigation</SheetTitle>
+            {sidebar}
+          </SheetContent>
+        </Sheet>
+      </header>
+      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground lg:flex">{sidebar}</aside>
+      <main className="portal-main min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">{children}</main>
     </div>
   );
 }
