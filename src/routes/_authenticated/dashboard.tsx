@@ -33,7 +33,7 @@ function Stat({ label, value, hint }: { label: string; value: number | string; h
 
 function Section({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <section className="mt-10">
+    <section className="mt-10 min-w-0">
       <div className="mb-3 grid min-w-0 gap-2 sm:flex sm:items-end sm:justify-between">
         <h2 className="text-xl">{title}</h2>
         {action}
@@ -168,7 +168,7 @@ function AdminPanel() {
         </div>
       </Section>
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
         <Section title="Examiner workload">
           <div className="overflow-x-auto rounded-md border border-border bg-card">
             <table className="w-full text-sm">
