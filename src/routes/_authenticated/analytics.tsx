@@ -496,14 +496,14 @@ function Reports({ data }: { data: { datasets: Dataset[]; runs: Run[] } }) {
       downloadPdf(`anomaly-report-${stamp}.pdf`, "Intelligent Evaluation Analytics — Anomaly Report",
         [`Dataset: ${dsName(run.dataset_id)} · Run: ${new Date(run.created_at).toLocaleString()}`,
          `Isolation Forest · ${run.n_estimators} trees · contamination ${(Number(run.contamination) * 100).toFixed(0)}% · features: ${run.features.join(", ")}`,
-         `Flagged ${run.anomaly_count} of ${run.record_count} records${m.precision != null ? ` · precision ${fmt(m.precision)} · recall ${fmt(m.recall)} · F1 ${fmt(m.f1)}` : ""}`],
+         `Flagged ${run.anomaly_count} of ${run.record_count} records${m["precision"] != null ? ` · precision ${fmt(m["precision"])} · recall ${fmt(m["recall"])} · F1 ${fmt(m["f1"])}` : ""}`],
         ["Row", "Exam", "Subject", "Evaluator", "Date", "Score", "Review", "Comment"],
         rows.map((r) => [r.row_index + 1, r.exam ?? "", r.subject ?? "", r.evaluator ?? "", r.record_date ?? "", Number(r.score).toFixed(3), r.review_status, r.review_comment ?? ""]));
     }
   }
   return (
     <div className="grid gap-6">
-      <Panel eyebrow="History" title="Model execution history" action={data.runs.length ? <Button size="sm" variant="outline" onClick={() => downloadCsv("model-runs.csv", data.runs.map((r) => ({ when: r.created_at, dataset: dsName(r.dataset_id), trees: r.n_estimators, contamination: r.contamination, features: r.features.join(" | "), records: r.record_count, anomalies: r.anomaly_count, f1: (r.metrics as Record<string, unknown>).f1 ?? "" })))}>Export CSV</Button> : null}>
+      <Panel eyebrow="History" title="Model execution history" action={data.runs.length ? <Button size="sm" variant="outline" onClick={() => downloadCsv("model-runs.csv", data.runs.map((r) => ({ when: r.created_at, dataset: dsName(r.dataset_id), trees: r.n_estimators, contamination: r.contamination, features: r.features.join(" | "), records: r.record_count, anomalies: r.anomaly_count, f1: (r.metrics as Record<string, unknown>)["f1"] ?? "" })))}>Export CSV</Button> : null}>
         {data.runs.length ? (
           <div className="overflow-x-auto"><table className="w-full min-w-[720px] text-sm">
             <thead className="text-left text-xs uppercase text-muted-foreground"><tr><th className="py-2">When</th><th>Dataset</th><th>Trees</th><th>Contam.</th><th>Records</th><th>Flagged</th><th>Anomaly report</th></tr></thead>
