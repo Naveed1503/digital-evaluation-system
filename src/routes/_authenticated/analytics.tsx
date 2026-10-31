@@ -424,13 +424,24 @@ function GroupTable({ title, rows }: { title: string; rows: { name: string; tota
     <Panel title={title}>
       {rows.length && !(rows.length === 1 && rows[0]!.name === "Unknown") ? (
         <>
-          <div className="mb-3 h-48"><ResponsiveContainer><BarChart data={rows.slice(0, 10)} layout="vertical" margin={{ left: 20 }}><XAxis type="number" fontSize={10} unit="%" /><YAxis type="category" dataKey="name" fontSize={10} width={110} /><Tooltip />
-            <Bar dataKey="rate" name="Anomaly rate %" fill={C.gold} /></BarChart></ResponsiveContainer></div>
+          <HBars className="mb-4" items={rows.slice(0, 10).map((g) => ({ name: g.name, value: g.rate, label: `${g.rate}%` }))} color="bg-gold" />
           <div className="overflow-x-auto"><table className="w-full text-sm"><thead className="text-left text-xs uppercase text-muted-foreground"><tr><th className="py-1.5">Name</th><th>Records</th><th>Flagged</th><th>Rate</th><th>Mean score</th></tr></thead>
             <tbody>{rows.map((g) => <tr key={g.name} className="border-t border-border"><td className="py-1.5">{g.name}</td><td className="font-mono">{g.total}</td><td className="font-mono">{g.anomalies}</td><td className="font-mono">{g.rate}%</td><td className="font-mono">{g.meanScore}</td></tr>)}</tbody></table></div>
         </>
       ) : <Empty>This dataset has no column for this grouping.</Empty>}
     </Panel>
+  );
+}
+
+function HBars({ items, color, className = "" }: { items: { name: string; value: number; label: string }[]; color: string; className?: string }) {
+  const max = Math.max(...items.map((i) => i.value), 0.0001);
+  return (
+    <ul className={`space-y-2 ${className}`}>{items.map((i) => (
+      <li key={i.name} className="grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)_3.5rem] items-center gap-2 text-xs">
+        <span className="truncate font-mono text-muted-foreground" title={i.name}>{i.name}</span>
+        <span className="h-3 rounded-sm bg-muted"><span className={`block h-3 rounded-sm ${color}`} style={{ width: `${Math.max(2, (i.value / max) * 100)}%` }} /></span>
+        <span className="text-right font-mono">{i.label}</span>
+      </li>))}</ul>
   );
 }
 
@@ -476,7 +487,7 @@ function Performance({ run }: { run: Run }) {
         <Kpi label="Score gap" value={fmt(Number(m.score_mean_anomalous) - Number(m.score_mean_normal))} hint="Mean score: anomalous − normal" icon={CheckCircle2} tone="gold" />
       </div>
       <Panel title="Feature contribution" action={<span className="text-xs text-muted-foreground">Standardised mean difference, anomalous vs normal</span>}>
-        {fi.length ? <div className="h-64"><ResponsiveContainer><BarChart data={fi} layout="vertical" margin={{ left: 30 }}><XAxis type="number" fontSize={10} /><YAxis type="category" dataKey="name" width={140} fontSize={10} /><Tooltip /><Bar dataKey="v" fill={C.primary} name="Contribution" /></BarChart></ResponsiveContainer></div> : <Empty>Not available.</Empty>}
+        {fi.length ? <HBars items={fi.map((x) => ({ name: x.name, value: x.v, label: x.v.toFixed(2) }))} color="bg-primary" /> : <Empty>Not available.</Empty>}
       </Panel>
     </div>
   );
