@@ -200,6 +200,7 @@ export type Database = {
           id: string
           label: string
           max_marks: number
+          model_answer: string
           number: number
         }
         Insert: {
@@ -207,6 +208,7 @@ export type Database = {
           id?: string
           label?: string
           max_marks: number
+          model_answer?: string
           number: number
         }
         Update: {
@@ -214,6 +216,7 @@ export type Database = {
           id?: string
           label?: string
           max_marks?: number
+          model_answer?: string
           number?: number
         }
         Relationships: [

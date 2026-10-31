@@ -9,6 +9,9 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useServerFn } from "@tanstack/react-start";
+import { Sparkles } from "lucide-react";
+import { getAiSuggestedMarks } from "@/lib/ai-mark.functions";
 
 type Rec = Record<string, string>;
 
@@ -37,6 +40,23 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
   const [notes, setNotes] = useState<Rec>({}); // evaluator remarks or moderator reasons
   const [remark, setRemark] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ai, setAi] = useState<Record<string, { marks: number; reason: string }>>({});
+  const [aiBusy, setAiBusy] = useState(false);
+  const suggestFn = useServerFn(getAiSuggestedMarks);
+
+  async function askAi() {
+    setAiBusy(true);
+    try {
+      const res = await suggestFn({ data: { scriptId } });
+      if (!res.ok) { toast.error(res.error); return; }
+      setAi(Object.fromEntries(res.suggestions.map((x) => [x.questionId, { marks: x.marks, reason: x.reason }])));
+      toast.success("AI suggestions ready — review before using");
+    } catch { toast.error("AI suggestion failed. Please mark manually."); }
+    finally { setAiBusy(false); }
+  }
+  function useAll() {
+    setValues((v) => { const n = { ...v }; for (const [k, x] of Object.entries(ai)) n[k] = String(x.marks); return n; });
+  }
 
   useEffect(() => {
     if (!data) return;
@@ -147,6 +167,18 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
             <p className="eyebrow text-gold">{mode === "evaluate" ? "Valuation sheet" : "Moderation sheet"}</p>
             <span className="text-xs text-muted-foreground">{answered}/{questions.length} marked</span>
           </div>
+          {!locked && (script.sample_answers as unknown[] | null)?.length ? (
+            <div className="mt-3 rounded-sm border border-gold/50 bg-gold/5 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="flex items-center gap-1.5 text-xs font-semibold"><Sparkles className="h-3.5 w-3.5 text-gold" /> AI marking assistant</p>
+                <div className="flex gap-2">
+                  {Object.keys(ai).length > 0 && <Button size="sm" variant="ghost" onClick={useAll}>Use all</Button>}
+                  <Button size="sm" variant="outline" onClick={askAi} disabled={aiBusy}>{aiBusy ? "Analysing…" : "Suggest marks"}</Button>
+                </div>
+              </div>
+              <p className="mt-1 text-[11px] text-muted-foreground">Compares each answer with the model answer. Suggestions only — you decide the final mark.</p>
+            </div>
+          ) : null}
           <div className="mt-3 space-y-3">
             {questions.map((q) => {
               const m = marks.find((x) => x.question_id === q.id);
@@ -170,6 +202,12 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
                     />
                     <span className="w-10 text-right font-mono text-xs text-muted-foreground">/{q.max_marks}</span>
                   </div>
+                  {ai[q.id] && !locked && (
+                    <div className="mt-2 flex items-start justify-between gap-2 rounded-sm bg-muted p-2 text-xs">
+                      <span><span className="font-semibold text-gold">AI: {ai[q.id]!.marks}/{q.max_marks}</span> · {ai[q.id]!.reason}</span>
+                      <button type="button" className="shrink-0 text-primary hover:underline" onClick={() => setValues((s) => ({ ...s, [q.id]: String(ai[q.id]!.marks) }))}>Use</button>
+                    </div>
+                  )}
                   {mode === "moderate" && m?.evaluator_remark && (
                     <p className="mt-2 text-xs italic text-muted-foreground">Evaluator: “{m.evaluator_remark}”</p>
                   )}

@@ -22,6 +22,13 @@
       "when": 1793122362944,
       "tag": "0002_restrict_exam_and_question_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793467488448,
+      "tag": "0003_add_question_model_answer",
+      "breakpoints": true
     }
   ]
 }
