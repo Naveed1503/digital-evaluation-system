@@ -8,6 +8,7 @@ import { ScriptViewer } from "@/components/ScriptViewer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -394,10 +395,11 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
   const [edit, setEdit] = useState(false);
   const [label, setLabel] = useState(q.label);
   const [max, setMax] = useState(String(q.max_marks));
+  const [model, setModel] = useState(q.model_answer ?? "");
   async function save() {
     const n = Number(max);
     if (!(n > 0)) { toast.error("Max marks must be more than 0"); return; }
-    const { error } = await supabase.from("questions").update({ label, max_marks: n }).eq("id", q.id);
+    const { error } = await supabase.from("questions").update({ label, max_marks: n, model_answer: model }).eq("id", q.id);
     if (error) { toast.error(error.message); return; }
     setEdit(false);
     onChange();
@@ -410,17 +412,18 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
   }
   if (edit)
     return (
-      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-border px-3 py-3 sm:flex sm:px-4">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-border px-3 py-3 sm:flex sm:flex-wrap sm:px-4">
         <span className="w-8 font-semibold">Q{q.number}</span>
         <Input className="h-8 min-w-0 flex-1" value={label} onChange={(e) => setLabel(e.target.value)} />
         <Input className="h-8 w-20" type="number" step="0.5" value={max} onChange={(e) => setMax(e.target.value)} />
         <Button size="sm" onClick={save}>Save</Button>
         <Button size="sm" variant="ghost" onClick={() => setEdit(false)}>Cancel</Button>
+        <Textarea className="col-span-3 mt-1 text-sm sm:basis-full" placeholder="Model answer / key points (used by the AI marking assistant)" value={model} onChange={(e) => setModel(e.target.value)} />
       </div>
     );
   return (
     <div className="grid min-w-0 gap-2 border-b border-border px-4 py-3 sm:flex sm:items-center sm:justify-between">
-      <div><span className="font-semibold">Q{q.number}</span> <span className="text-muted-foreground">{q.label}</span></div>
+      <div><span className="font-semibold">Q{q.number}</span> <span className="text-muted-foreground">{q.label}</span>{q.model_answer ? <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px]">Model answer set</span> : null}</div>
       <div className="flex items-center gap-3">
         <span className="font-mono">{q.max_marks} marks</span>
         {editable && (
@@ -437,12 +440,13 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
 function QuestionsPanel({ examId, questions, editable, onChange, maxTotal }: { examId: string; questions: Q[]; editable: boolean; onChange: () => void; maxTotal: number }) {
   const [label, setLabel] = useState("");
   const [max, setMax] = useState("10");
+  const [model, setModel] = useState("");
   async function add(e: React.FormEvent) {
     e.preventDefault();
     const number = (questions.at(-1)?.number ?? 0) + 1;
-    const { error } = await supabase.from("questions").insert({ exam_id: examId, number, label, max_marks: Number(max) });
+    const { error } = await supabase.from("questions").insert({ exam_id: examId, number, label, max_marks: Number(max), model_answer: model });
     if (error) { toast.error(error.message); return; }
-    setLabel("");
+    setLabel(""); setModel("");
     onChange();
   }
   return (
@@ -452,10 +456,11 @@ function QuestionsPanel({ examId, questions, editable, onChange, maxTotal }: { e
         <div className="flex justify-between bg-muted px-4 py-3 font-semibold"><span>Maximum marks</span><span className="font-mono">{maxTotal}</span></div>
       </div>
       {editable ? (
-        <form onSubmit={add} className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-end">
+        <form onSubmit={add} className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="flex-1 space-y-1"><Label>Question topic (optional)</Label><Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. Stacks & queues" /></div>
           <div className="w-full space-y-1 sm:w-28"><Label>Max marks</Label><Input type="number" min={0.5} step="0.5" required value={max} onChange={(e) => setMax(e.target.value)} /></div>
           <Button type="submit">Add question</Button>
+          <div className="w-full space-y-1 sm:basis-full"><Label>Model answer / key points (optional, used by AI marking assistant)</Label><Textarea value={model} onChange={(e) => setModel(e.target.value)} placeholder="e.g. Stack is LIFO; push adds on top; pop removes top; overflow when full" /></div>
         </form>
       ) : (
         <p className="mt-3 text-xs text-muted-foreground">The question paper is locked once valuation begins.</p>
