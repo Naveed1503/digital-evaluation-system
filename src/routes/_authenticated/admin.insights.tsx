@@ -166,7 +166,7 @@ function InsightsPage() {
                     <tr key={r.s.id} className="border-t border-border">
                       <td className="px-3 py-2 font-mono">{r.s.code}</td>
                       {r.vec.map((v, j) => <td key={j} className="font-mono">{v}</td>)}
-                      <td><span className={`rounded-full px-2 py-0.5 text-xs ${GROUP_STYLE[analysis.groups.group[i]]}`}>{analysis.groups.group[i]}</span></td>
+                      <td><span className={`rounded-full px-2 py-0.5 text-xs ${GROUP_STYLE[analysis.groups.group[i] ?? ""]}`}>{analysis.groups.group[i]}</span></td>
                     </tr>
                   ))}
                 </tbody>

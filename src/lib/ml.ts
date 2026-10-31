@@ -100,10 +100,10 @@ export const GROUP_NAMES = ["Needs support", "Average", "Strong"] as const;
 export function groupStudents(vectors: number[][]): { group: string[]; centroids: { name: string; avg: number }[] } {
   const { labels, centroids } = kMeans(vectors, 3);
   const ranked = centroids.map((c, idx) => ({ idx, avg: mean(c) })).sort((a, b) => a.avg - b.avg);
-  const names = ranked.length === 3 ? GROUP_NAMES : ranked.length === 2 ? ["Needs support", "Strong"] : ["Average"];
-  const nameOf = new Map(ranked.map((r, i) => [r.idx, names[i]]));
+  const names: readonly string[] = ranked.length === 3 ? GROUP_NAMES : ranked.length === 2 ? ["Needs support", "Strong"] : ["Average"];
+  const nameOf = new Map(ranked.map((r, i) => [r.idx, names[i] ?? "Average"]));
   return {
     group: labels.map((l) => nameOf.get(l)!),
-    centroids: ranked.map((r, i) => ({ name: names[i], avg: Math.round(r.avg * 10) / 10 })),
+    centroids: ranked.map((r, i) => ({ name: names[i] ?? "Average", avg: Math.round(r.avg * 10) / 10 })),
   };
 }
