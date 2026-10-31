@@ -15,3 +15,6 @@
 - Roles are in user_roles checked via has_role(); the first account to sign up becomes admin, later ones default to student.
 - Grade bands and final-mark rule live in src/lib/grading.ts with tests next to it.
 - AppShell uses a sheet navigation below the desktop breakpoint and a persistent desktop sidebar; workflow tables scroll within their own containers so phone pages remain viewport-width.
+- Isolation Forest runs only in the external Python service in ml-service/ (FastAPI + scikit-learn), called from src/lib/analytics.functions.ts with ML_SERVICE_URL/ML_SERVICE_KEY (X-ML-Key header); the app never computes or fakes anomaly predictions itself.
+- ML anomaly flags are advisory: moderators record decisions only via review_ml_flag(); no ML code path writes to marks.
+- AI suggested marks (src/lib/ai-mark.*) are suggestions only; the evaluator must enter/accept marks, and values are clamped to each question's limits.
