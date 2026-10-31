@@ -118,6 +118,5 @@ export const runAnomalyDetection = createServerFn({ method: "POST" })
       const { error: e } = await context.supabase.from("ml_results").insert(items.slice(i, i + 1000));
       if (e) return { ok: false as const, error: e.message };
     }
-    await context.supabase.from("audit_log").insert({ actor_id: context.userId, action: "ml_run", details: `Isolation Forest on ${ds.name}: ${anomalies}/${out.results.length} flagged` }).then(() => null, () => null);
     return { ok: true as const, runId: run.id, anomalies, records: out.results.length };
   });
