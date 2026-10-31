@@ -8,9 +8,9 @@ describe("dataset profiling", () => {
     { marks: "", subject: "OS", date: "2026-01-04", ok: "true" },
   ];
   const p = Object.fromEntries(profileColumns(rows).map((c) => [c.name, c]));
-  it("detects numeric columns even when stored as text", () => expect(p.marks!.type).toBe("number"));
-  it("counts blank cells as missing", () => { expect(p.marks!.missing).toBe(1); expect(p.subject!.missing).toBe(1); });
-  it("detects dates and yes/no columns", () => { expect(p.date!.type).toBe("date"); expect(p.ok!.type).toBe("boolean"); });
+  it("detects numeric columns even when stored as text", () => expect(p["marks"]!.type).toBe("number"));
+  it("counts blank cells as missing", () => { expect(p["marks"]!.missing).toBe(1); expect(p["subject"]!.missing).toBe(1); });
+  it("detects dates and yes/no columns", () => { expect(p["date"]!.type).toBe("date"); expect(p["ok"]!.type).toBe("boolean"); });
   it("finds the evaluator and subject columns by header name", () => {
     expect(findRoleColumn(["Marks", "Examiner", "Course"], "evaluator")).toBe("Examiner");
     expect(findRoleColumn(["Marks", "Examiner", "Course"], "subject")).toBe("Course");

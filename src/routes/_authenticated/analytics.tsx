@@ -84,7 +84,7 @@ function AnalyticsPage() {
   );
 }
 
-function RunPicker({ runs, datasets, value, onChange }: { runs: Run[]; datasets: Dataset[]; value?: string; onChange: (id: string) => void }) {
+function RunPicker({ runs, datasets, value, onChange }: { runs: Run[]; datasets: Dataset[]; value: string | undefined; onChange: (id: string) => void }) {
   if (!runs.length) return null;
   return (
     <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -168,7 +168,7 @@ function Datasets({ datasets }: { datasets: Dataset[] }) {
       const { data: u } = await supabase.auth.getUser();
       const { data, error } = await supabase.from("ml_datasets").insert({
         name: file.name.replace(/\.[^.]+$/, ""), source: "upload", file_name: file.name, row_count: rows.length, column_count: profile.length,
-        profile: profile as unknown as Json, rows: rows as unknown as Json, created_by: u.user?.id,
+        profile: profile as unknown as Json, rows: rows as unknown as Json, created_by: u.user?.id ?? null,
       }).select("id").single();
       if (error) throw error;
       toast.success(`Uploaded ${rows.length.toLocaleString()} rows`);
@@ -436,7 +436,11 @@ function GroupTable({ title, rows }: { title: string; rows: { name: string; tota
 
 /* ---------------- Performance ---------------- */
 function Performance({ run }: { run: Run }) {
-  const m = run.metrics as Record<string, number & unknown> & { mode?: string; confusion_matrix?: { tn: number; fp: number; fn: number; tp: number }; feature_importance?: Record<string, number>; features_used?: string[]; label_warning?: string };
+  const m = run.metrics as {
+    mode?: string; confusion_matrix?: { tn: number; fp: number; fn: number; tp: number }; feature_importance?: Record<string, number>; label_warning?: string;
+    runtime_ms?: number; precision?: number; recall?: number; f1?: number; labelled_records?: number; anomaly_rate?: number; silhouette?: number;
+    threshold?: number; score_mean_anomalous?: number; score_mean_normal?: number;
+  };
   const fi = Object.entries(m.feature_importance ?? {}).map(([name, v]) => ({ name, v: Math.round(v * 1000) / 1000 }));
   return (
     <div className="grid gap-6">

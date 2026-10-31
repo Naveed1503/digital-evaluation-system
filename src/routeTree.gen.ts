@@ -22,6 +22,7 @@ import { Route as AuthenticatedEvaluateIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedEvaluateScriptIdRouteImport } from './routes/_authenticated/evaluate.$scriptId'
 import { Route as AuthenticatedModerateIndexRouteImport } from './routes/_authenticated/moderate.index'
 import { Route as AuthenticatedModerateScriptIdRouteImport } from './routes/_authenticated/moderate.$scriptId'
+import { Route as AuthenticatedModerateFlagsRouteImport } from './routes/_authenticated/moderate.flags'
 import { Route as AuthenticatedAdminExamsIndexRouteImport } from './routes/_authenticated/admin.exams.index'
 import { Route as AuthenticatedAdminExamsExamIdRouteImport } from './routes/_authenticated/admin.exams.$examId'
 
@@ -94,6 +95,12 @@ const AuthenticatedModerateScriptIdRoute =
     path: '/moderate/$scriptId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedModerateFlagsRoute =
+  AuthenticatedModerateFlagsRouteImport.update({
+    id: '/moderate/flags',
+    path: '/moderate/flags',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminExamsIndexRoute =
   AuthenticatedAdminExamsIndexRouteImport.update({
     id: '/admin/exams/',
@@ -118,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/evaluate/$scriptId': typeof AuthenticatedEvaluateScriptIdRoute
   '/moderate/$scriptId': typeof AuthenticatedModerateScriptIdRoute
+  '/moderate/flags': typeof AuthenticatedModerateFlagsRoute
   '/evaluate/': typeof AuthenticatedEvaluateIndexRoute
   '/moderate/': typeof AuthenticatedModerateIndexRoute
   '/admin/exams/$examId': typeof AuthenticatedAdminExamsExamIdRoute
@@ -134,6 +142,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/evaluate/$scriptId': typeof AuthenticatedEvaluateScriptIdRoute
   '/moderate/$scriptId': typeof AuthenticatedModerateScriptIdRoute
+  '/moderate/flags': typeof AuthenticatedModerateFlagsRoute
   '/evaluate': typeof AuthenticatedEvaluateIndexRoute
   '/moderate': typeof AuthenticatedModerateIndexRoute
   '/admin/exams/$examId': typeof AuthenticatedAdminExamsExamIdRoute
@@ -152,6 +161,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/evaluate/$scriptId': typeof AuthenticatedEvaluateScriptIdRoute
   '/_authenticated/moderate/$scriptId': typeof AuthenticatedModerateScriptIdRoute
+  '/_authenticated/moderate/flags': typeof AuthenticatedModerateFlagsRoute
   '/_authenticated/evaluate/': typeof AuthenticatedEvaluateIndexRoute
   '/_authenticated/moderate/': typeof AuthenticatedModerateIndexRoute
   '/_authenticated/admin/exams/$examId': typeof AuthenticatedAdminExamsExamIdRoute
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/evaluate/$scriptId'
     | '/moderate/$scriptId'
+    | '/moderate/flags'
     | '/evaluate/'
     | '/moderate/'
     | '/admin/exams/$examId'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/evaluate/$scriptId'
     | '/moderate/$scriptId'
+    | '/moderate/flags'
     | '/evaluate'
     | '/moderate'
     | '/admin/exams/$examId'
@@ -203,6 +215,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/evaluate/$scriptId'
     | '/_authenticated/moderate/$scriptId'
+    | '/_authenticated/moderate/flags'
     | '/_authenticated/evaluate/'
     | '/_authenticated/moderate/'
     | '/_authenticated/admin/exams/$examId'
@@ -308,6 +321,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedModerateScriptIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/moderate/flags': {
+      id: '/_authenticated/moderate/flags'
+      path: '/moderate/flags'
+      fullPath: '/moderate/flags'
+      preLoaderRoute: typeof AuthenticatedModerateFlagsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/exams/': {
       id: '/_authenticated/admin/exams/'
       path: '/admin/exams'
@@ -334,6 +354,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedEvaluateScriptIdRoute: typeof AuthenticatedEvaluateScriptIdRoute
   AuthenticatedModerateScriptIdRoute: typeof AuthenticatedModerateScriptIdRoute
+  AuthenticatedModerateFlagsRoute: typeof AuthenticatedModerateFlagsRoute
   AuthenticatedEvaluateIndexRoute: typeof AuthenticatedEvaluateIndexRoute
   AuthenticatedModerateIndexRoute: typeof AuthenticatedModerateIndexRoute
   AuthenticatedAdminExamsExamIdRoute: typeof AuthenticatedAdminExamsExamIdRoute
@@ -349,6 +370,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedEvaluateScriptIdRoute: AuthenticatedEvaluateScriptIdRoute,
   AuthenticatedModerateScriptIdRoute: AuthenticatedModerateScriptIdRoute,
+  AuthenticatedModerateFlagsRoute: AuthenticatedModerateFlagsRoute,
   AuthenticatedEvaluateIndexRoute: AuthenticatedEvaluateIndexRoute,
   AuthenticatedModerateIndexRoute: AuthenticatedModerateIndexRoute,
   AuthenticatedAdminExamsExamIdRoute: AuthenticatedAdminExamsExamIdRoute,
