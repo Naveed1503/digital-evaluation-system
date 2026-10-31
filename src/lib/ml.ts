@@ -40,7 +40,7 @@ export function detectUnusualMarking(
   const z = zScores(scores.map((s) => s.pct));
   const flags: ScriptFlag[] = [];
   scores.forEach((s, i) => {
-    if (Math.abs(z[i]) >= scriptThreshold) flags.push({ id: s.id, z: z[i], kind: z[i] > 0 ? "high" : "low" });
+    if (Math.abs(z[i]!) >= scriptThreshold) flags.push({ id: s.id, z: z[i]!, kind: z[i]! > 0 ? "high" : "low" });
   });
   const byEval = new Map<string, number[]>();
   scores.forEach((s, i) => {
@@ -48,11 +48,11 @@ export function detectUnusualMarking(
     byEval.set(s.evaluatorId, [...(byEval.get(s.evaluatorId) ?? []), i]);
   });
   const evaluators: EvaluatorBias[] = [...byEval.entries()].map(([evaluatorId, idx]) => {
-    const bias = mean(idx.map((i) => z[i]));
+    const bias = mean(idx.map((i) => z[i]!));
     return {
       evaluatorId,
       scripts: idx.length,
-      meanPct: mean(idx.map((i) => scores[i].pct)),
+      meanPct: mean(idx.map((i) => scores[i]!.pct)),
       bias,
       label: bias >= biasThreshold ? "Lenient" : bias <= -biasThreshold ? "Strict" : "Normal",
     };
@@ -61,7 +61,7 @@ export function detectUnusualMarking(
 }
 
 function dist2(a: number[], b: number[]) {
-  return a.reduce((s, v, i) => s + (v - b[i]) ** 2, 0);
+  return a.reduce((s, v, i) => s + (v - b[i]!) ** 2, 0);
 }
 
 /**
@@ -74,20 +74,20 @@ export function kMeans(points: number[][], k: number, maxIter = 100): { labels: 
   const order = points.map((p, i) => ({ i, m: mean(p) })).sort((a, b) => a.m - b.m);
   let centroids = Array.from({ length: kk }, (_, c) => {
     const pos = kk === 1 ? 0 : Math.round((c * (order.length - 1)) / (kk - 1));
-    return [...points[order[pos].i]];
+    return [...points[order[pos]!.i]!];
   });
   let labels = new Array(points.length).fill(-1);
   for (let it = 0; it < maxIter; it++) {
     const next = points.map((p) => {
       let best = 0;
-      for (let c = 1; c < kk; c++) if (dist2(p, centroids[c]) < dist2(p, centroids[best])) best = c;
+      for (let c = 1; c < kk; c++) if (dist2(p, centroids[c]!) < dist2(p, centroids[best]!)) best = c;
       return best;
     });
     const same = next.every((l, i) => l === labels[i]);
     labels = next;
     centroids = centroids.map((old, c) => {
       const members = points.filter((_, i) => labels[i] === c);
-      return members.length ? old.map((_, d) => mean(members.map((m) => m[d]))) : old;
+      return members.length ? old.map((_, d) => mean(members.map((m) => m[d]!))) : old;
     });
     if (same) break;
   }

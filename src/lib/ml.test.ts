@@ -9,7 +9,7 @@ describe("z-score anomaly detection", () => {
     const scores = [50, 52, 48, 51, 49, 50, 53, 47, 50, 95].map((pct, i) => ({ id: `s${i}`, evaluatorId: "e", pct }));
     const { flags } = detectUnusualMarking(scores);
     expect(flags.map((f) => f.id)).toEqual(["s9"]);
-    expect(flags[0].kind).toBe("high");
+    expect(flags[0]?.kind).toBe("high");
   });
   it("labels a consistently generous evaluator as Lenient and a harsh one as Strict", () => {
     const scores = [
