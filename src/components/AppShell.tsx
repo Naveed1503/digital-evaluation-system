@@ -13,6 +13,8 @@ import {
   Landmark,
   Menu,
   BrainCircuit,
+  BarChart3,
+  Flag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -23,10 +25,12 @@ const NAV: { to: string; label: string; roles: AppRole[]; icon: typeof LayoutDas
   { to: "/dashboard", label: "Dashboard", roles: ["admin", "evaluator", "moderator", "student"], icon: LayoutDashboard },
   { to: "/admin/exams", label: "Examinations", roles: ["admin"], icon: FileStack },
   { to: "/admin/users", label: "Users & Roles", roles: ["admin"], icon: Users },
+  { to: "/analytics", label: "Evaluation Analytics", roles: ["admin"], icon: BarChart3 },
   { to: "/admin/insights", label: "ML Insights", roles: ["admin"], icon: BrainCircuit },
   { to: "/admin/audit", label: "Audit Trail", roles: ["admin"], icon: ScrollText },
   { to: "/evaluate", label: "My Valuation", roles: ["evaluator"], icon: PenLine },
   { to: "/moderate", label: "Moderation", roles: ["moderator"], icon: ShieldCheck },
+  { to: "/moderate/flags", label: "Flagged Records", roles: ["moderator", "admin"], icon: Flag },
   { to: "/results", label: "My Results", roles: ["student"], icon: GraduationCap },
 ];
 

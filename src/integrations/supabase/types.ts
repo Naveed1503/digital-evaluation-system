@@ -170,6 +170,160 @@ export type Database = {
           },
         ]
       }
+      ml_datasets: {
+        Row: {
+          column_count: number
+          created_at: string
+          created_by: string | null
+          file_name: string | null
+          id: string
+          name: string
+          profile: Json
+          row_count: number
+          rows: Json
+          source: string
+        }
+        Insert: {
+          column_count?: number
+          created_at?: string
+          created_by?: string | null
+          file_name?: string | null
+          id?: string
+          name: string
+          profile?: Json
+          row_count?: number
+          rows?: Json
+          source: string
+        }
+        Update: {
+          column_count?: number
+          created_at?: string
+          created_by?: string | null
+          file_name?: string | null
+          id?: string
+          name?: string
+          profile?: Json
+          row_count?: number
+          rows?: Json
+          source?: string
+        }
+        Relationships: []
+      }
+      ml_results: {
+        Row: {
+          evaluator: string | null
+          exam: string | null
+          id: string
+          is_anomaly: boolean
+          record: Json
+          record_date: string | null
+          review_comment: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          row_index: number
+          run_id: string
+          score: number
+          script_id: string | null
+          subject: string | null
+        }
+        Insert: {
+          evaluator?: string | null
+          exam?: string | null
+          id?: string
+          is_anomaly: boolean
+          record?: Json
+          record_date?: string | null
+          review_comment?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          row_index: number
+          run_id: string
+          score: number
+          script_id?: string | null
+          subject?: string | null
+        }
+        Update: {
+          evaluator?: string | null
+          exam?: string | null
+          id?: string
+          is_anomaly?: boolean
+          record?: Json
+          record_date?: string | null
+          review_comment?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          row_index?: number
+          run_id?: string
+          score?: number
+          script_id?: string | null
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ml_results_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "ml_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ml_runs: {
+        Row: {
+          algorithm: string
+          anomaly_count: number
+          contamination: number
+          created_at: string
+          created_by: string | null
+          dataset_id: string
+          features: string[]
+          id: string
+          label_column: string | null
+          metrics: Json
+          n_estimators: number
+          record_count: number
+        }
+        Insert: {
+          algorithm?: string
+          anomaly_count?: number
+          contamination: number
+          created_at?: string
+          created_by?: string | null
+          dataset_id: string
+          features: string[]
+          id?: string
+          label_column?: string | null
+          metrics?: Json
+          n_estimators: number
+          record_count?: number
+        }
+        Update: {
+          algorithm?: string
+          anomaly_count?: number
+          contamination?: number
+          created_at?: string
+          created_by?: string | null
+          dataset_id?: string
+          features?: string[]
+          id?: string
+          label_column?: string | null
+          metrics?: Json
+          n_estimators?: number
+          record_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ml_runs_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "ml_datasets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -354,6 +508,10 @@ export type Database = {
       publish_results: { Args: { _exam_id: string }; Returns: undefined }
       reassign_script: {
         Args: { _evaluator: string; _moderator: string; _script_id: string }
+        Returns: undefined
+      }
+      review_ml_flag: {
+        Args: { _comment: string; _result_id: string; _status: string }
         Returns: undefined
       }
       save_evaluation_draft: {

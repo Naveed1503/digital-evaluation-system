@@ -29,6 +29,13 @@
       "when": 1793467488448,
       "tag": "0003_add_question_model_answer",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793468918211,
+      "tag": "0004_intelligent_evaluation_analytics",
+      "breakpoints": true
     }
   ]
 }
