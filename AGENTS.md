@@ -18,3 +18,4 @@
 - Isolation Forest runs only in the external Python service in ml-service/ (FastAPI + scikit-learn), called from src/lib/analytics.functions.ts with ML_SERVICE_URL/ML_SERVICE_KEY (X-ML-Key header); the app never computes or fakes anomaly predictions itself.
 - ML anomaly flags are advisory: moderators record decisions only via review_ml_flag(); no ML code path writes to marks.
 - AI suggested marks (src/lib/ai-mark.*) are suggestions only; the evaluator must enter/accept marks, and values are clamped to each question's limits.
+- research/ holds the ASAP-SAS paper experiment (Python, not part of the web app); every number in research/paper/paper.tex is generated from research/outputs by make_paper.py, so rerun rather than hand-edit results.
