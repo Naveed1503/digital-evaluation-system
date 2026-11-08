@@ -7,7 +7,7 @@
 
 # Paper: automatic answer scoring
 - [x] AI suggested marks in marking sheet (model answer per question)
-- [ ] Experiment notebook + results tables + charts (ASAP-SAS), training run being sped up
+- [x] Experiment notebook, results, charts, IEEE draft
 
 # Intelligent Evaluation Analytics dashboard
 - [x] Python FastAPI + scikit-learn Isolation Forest service (ml-service/)
