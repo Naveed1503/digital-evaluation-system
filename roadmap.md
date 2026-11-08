@@ -10,5 +10,6 @@
 - [ ] Experiment notebook + results tables + charts (ASAP-SAS), training run being sped up
 
 # Intelligent Evaluation Analytics dashboard
-- [ ] Decide where the Python Isolation Forest service runs (waiting on user)
-- [ ] KPIs, dataset upload/preview, model config, results, performance, moderator review, history/exports
+- [x] Python FastAPI + scikit-learn Isolation Forest service (ml-service/)
+- [x] KPIs, dataset upload/preview, model config, results, performance, moderator review, history/exports
+- [ ] Deploy ml-service and save ML_SERVICE_URL + ML_SERVICE_KEY (waiting on user)
