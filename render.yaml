@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: des-ml-service
+    runtime: python
+    plan: free
+    rootDir: ml-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ML_SERVICE_KEY
+        sync: false
