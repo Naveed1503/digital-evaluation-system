@@ -16,6 +16,6 @@
 
 # System IEEE paper revision
 - [x] Audit the previous paper against implementation and verify references
-- [ ] Add the implemented system architecture diagram
-- [ ] Rebuild the paper with only abstract, keywords, introduction, methodology, results, conclusion and references
-- [ ] Inspect every generated page and deliver the revised PDF/source
+- [x] Add the implemented system architecture diagram
+- [x] Rebuild the paper with only abstract, keywords, introduction, methodology, results, conclusion and references
+- [x] Inspect every generated page and deliver the revised PDF/source
