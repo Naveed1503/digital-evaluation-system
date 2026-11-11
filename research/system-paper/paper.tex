@@ -95,7 +95,6 @@ The implementation therefore satisfies the tested functional invariants: questio
 
 These are limited engineering results. They do not quantify evaluation-time savings, marking accuracy, inter-rater reliability, detection precision on real institutional records or resistance to a dedicated security attack. The fixed grade bands require institutional confirmation. Isolation Forest flags statistical outliers, which may be legitimate records, and uploaded labels may be unsuitable for validation. Consequently, human moderation and a future controlled institutional evaluation remain necessary.
 
-\balance
 \section{Conclusion}
 The implemented DES integrates private script handling, anonymised role-based assignment, online marking, reason-tracked moderation, automated tabulation and published student results in one workflow. Database policies and validated workflow functions enforce the implemented access and state rules, while revision and audit records preserve evidence of changes. A separate FastAPI and scikit-learn service adds Isolation Forest analytics without granting the model authority to alter marks. Automated tests and the live health check confirm the reported implementation behaviour, but broader claims about efficiency, assessment quality and real-world anomaly accuracy require separate empirical studies.
 
