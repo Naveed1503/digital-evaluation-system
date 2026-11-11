@@ -12,4 +12,10 @@
 # Intelligent Evaluation Analytics dashboard
 - [x] Python FastAPI + scikit-learn Isolation Forest service (ml-service/)
 - [x] KPIs, dataset upload/preview, model config, results, performance, moderator review, history/exports
-- [ ] Deploy ml-service and save ML_SERVICE_URL + ML_SERVICE_KEY (waiting on user)
+- [x] Deploy ml-service and save ML_SERVICE_URL + ML_SERVICE_KEY
+
+# System IEEE paper revision
+- [x] Audit the previous paper against implementation and verify references
+- [x] Add the implemented system architecture diagram
+- [x] Rebuild the paper with only abstract, keywords, introduction, methodology, results, conclusion and references
+- [x] Inspect every generated page and deliver the revised PDF/source
