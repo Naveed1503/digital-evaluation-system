@@ -5,7 +5,7 @@ export type PageResult<T> = {
 
 /** Fetch every row instead of accepting PostgREST's default 1,000-row page. */
 export async function fetchAllPages<T>(
-  fetchPage: (from: number, to: number) => Promise<PageResult<T>>,
+  fetchPage: (from: number, to: number) => PromiseLike<PageResult<T>>,
   pageSize = 1000,
 ): Promise<T[]> {
   if (!Number.isInteger(pageSize) || pageSize < 1) throw new Error("Page size must be a positive integer.");
