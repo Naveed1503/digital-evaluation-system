@@ -45,7 +45,7 @@ def arrow(x1, y1, x2, y2, color=LINE, style="-|>", width=1.5, connection="arc3")
 
 
 ax.text(7, 7.76, "ROLE-BASED BROWSER INTERFACES", ha="center", va="center",
-        fontsize=12, fontweight="bold", color=MUTED, tracking=1.1 if hasattr(plt.Text, 'tracking') else None)
+        fontsize=12, fontweight="bold", color=MUTED)
 roles = [
     (0.25, "Controller", ["Exams · assignment", "publication · audit"]),
     (3.02, "Evaluator", ["Assigned scripts", "marks · drafts"]),
