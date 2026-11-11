@@ -1,0 +1,102 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx,booktabs,amsmath,cite,url}
+\begin{document}
+\title{Design and Implementation of a Secure Digital Evaluation System with Role-Based Workflows, Audit Trails and Intelligent Marking Analytics}
+\author{\IEEEauthorblockN{Shaik Naveed Ahamed}
+\IEEEauthorblockA{School of Computer Science and Engineering\\REVA University, Bengaluru, India}}
+\maketitle
+
+\begin{abstract}
+Manual examination evaluation is slow, paper-intensive and difficult to audit: answer scripts must be physically distributed to examiners, marks are totalled and transcribed by hand, and moderation decisions leave little traceable evidence. This paper presents the design and implementation of a Digital Evaluation System (DES) that digitises the complete evaluation pipeline -- secure answer-script storage, anonymised evaluator assignment, online marking with draft support, moderation with mandatory reason tracking, automated tabulation and result publication. The system implements four roles (Controller, Evaluator, Moderator, Student) with access control enforced at the database layer through row-level security policies, and separates student identity from scripts so that markers see only anonymised script codes. Every workflow write passes through server-side functions that validate role, ownership and mark limits, and all moderation changes are recorded in an immutable revision log. An intelligent analytics module runs Isolation Forest over marking data in a separate Python service to flag unusual marking patterns for moderator review, and an AI assistant proposes per-question marks that evaluators must explicitly confirm. Both machine-learning components are strictly advisory: no automated process ever writes a mark. We describe the architecture, security model, workflow design and implementation, and report functional and security testing of the deployed system.
+\end{abstract}
+
+\begin{IEEEkeywords}
+digital evaluation, on-screen marking, examination automation, row-level security, audit trail, anomaly detection, isolation forest, educational assessment
+\end{IEEEkeywords}
+
+\section{Introduction}
+Universities evaluate large volumes of handwritten answer scripts every semester. The traditional process -- collecting physical scripts, transporting them to examiners, totalling marks by hand and transcribing them into result sheets -- is time-consuming, error-prone and difficult to audit. Delays in any step postpone result declaration, and disputes over marks are hard to resolve because the paper trail is incomplete.
+
+On-screen (digital) evaluation addresses the logistics: scanned scripts are distributed electronically, marks are entered directly into the system, and tabulation is automatic. However, moving the process online introduces new requirements that a naive web application does not satisfy. Scripts must remain confidential and accessible only to authorised examiners; markers must not be able to identify candidates; every change to a mark must be traceable; and the system must help, rather than replace, human judgement.
+
+This paper describes a Digital Evaluation System (DES) built to meet these requirements, and makes three contributions: (1) a complete role-based evaluation workflow -- from script upload and anonymised assignment through marking, moderation and publication -- implemented as a production web application; (2) a security model in which access control is enforced in the database itself, so that no application bug can expose scripts or identities to the wrong role; and (3) an intelligent analytics layer that flags unusual marking for human review and suggests per-question marks, while keeping every final decision with a human examiner.
+
+\section{Related Work}
+On-screen marking systems have been adopted by several examination boards to reduce logistics cost and turnaround time. Research on digital evaluation has focused on workflow modelling, security of script distribution, and marker consistency. Automated and semi-automated scoring has a long research history: Burrows et al.\ \cite{burrows2015} survey automatic short-answer grading, and the ASAP competition \cite{shermis2014} provides public benchmarks. Anomaly detection with Isolation Forest \cite{liu2008} is widely used for outlier identification in tabular data and is well suited to flagging unusual marking patterns. Our work differs by integrating these techniques into a single operational workflow in which machine-learning output is advisory and every mark remains human-authored and auditable.
+
+\section{System Overview and Roles}
+The DES is a web application with four roles. The \emph{Controller} (examination administrator) creates examinations and questions with maximum marks and model answers, uploads scanned scripts to private storage, and assigns scripts to evaluators and moderators, with support for reassignment. \emph{Evaluators} see only their assigned scripts, identified by anonymised script codes, and enter marks and remarks per question; they may save a draft and return later, and submit when finished. \emph{Moderators} review submitted scripts and may change a mark only after entering a reason, producing a complete audit trail. After moderation, the Controller publishes results, and \emph{Students} see their marks, percentage and grade in a result portal.
+
+Table~\ref{tab:roles} summarises the role permissions. The design principle is least privilege: each role sees exactly the records its task requires, and nothing more.
+
+\begin{table}[t]\centering\caption{Role permissions in the DES}\label{tab:roles}
+\begin{tabular}{p{1.35cm}p{6.3cm}}\toprule
+Role & Capabilities \\\midrule
+Controller & Manage exams, questions and users; upload scripts; assign and reassign evaluators and moderators; publish results; view audit log and analytics \\
+Evaluator & View assigned anonymised scripts; enter marks and remarks; save drafts; submit completed evaluations \\
+Moderator & Review submitted scripts; change marks only with a recorded reason; review ML anomaly flags \\
+Student & View own published results with marks, percentage and grade \\
+\bottomrule\end{tabular}\end{table}
+
+\section{System Architecture}
+\subsection{Application layers}
+The system is a full-stack React application with three layers. The presentation layer provides role-specific dashboards: a Controller dashboard with workflow counts, an assignment console and an audit view; an Evaluator marking workspace with the scanned script beside per-question mark fields; a Moderator review queue; and a Student result portal. The application layer exposes server functions that implement every workflow operation -- assignment, reassignment, draft saving, submission, moderation and publication -- and validate the caller's role, ownership of the record and mark limits before any write. The data layer is a managed PostgreSQL database with private file storage for scanned scripts.
+
+\subsection{Database design}
+The schema comprises twelve tables, including examinations, questions, answer scripts, a separate table linking scripts to student identities, per-question marks, mark revision history, user roles, profiles and an audit log. Scanned scripts are stored as files in private storage; the database holds only references. This separation keeps the database small and allows file access to be controlled independently.
+
+\subsection{Anonymisation}
+Student identity is stored only in the script-ownership table, which is readable by Controllers and by the owning student. Evaluators and moderators query views and functions that return script codes and files but never identity columns. A marker therefore cannot de-anonymise a script through any interface the system exposes, and the anonymisation does not depend on application code behaving correctly -- it is enforced by the database policies described next.
+
+\section{Security Model}
+\subsection{Row-level security}
+Every table is protected by row-level security (RLS) policies that are evaluated by the database engine on every query. Policies reference the caller's role, stored in a dedicated role table and checked through a security-definer function that cannot be spoofed by client-supplied data. For example, an evaluator's read policy on marks matches only rows for scripts currently assigned to that evaluator; a student's read policy on results matches only published rows owned by that student. Because enforcement happens inside the database, a bug or malicious request in the application layer cannot widen access.
+
+\subsection{Server-validated workflow writes}
+All state-changing operations -- assigning or reassigning a script, saving a draft, submitting an evaluation, moderating a mark, publishing results -- are implemented as server-side database functions with elevated internal privileges but strict validation. Each function verifies the caller's role, checks that the record is in the expected state (for example, a script can be submitted only once, and moderated only after submission), and clamps marks to the question's maximum. A moderation change without a reason is rejected, and the reason is written to the revision log in the same transaction as the mark change, so the two can never diverge.
+
+\subsection{Auditability}
+The system keeps two complementary histories. The mark revision table records every moderated change: script, question, old and new marks, the reason, the moderator and the timestamp. The audit log records workflow events such as assignment, submission and publication. Together they allow a Controller to reconstruct who did what to every script, which is essential for resolving disputes and for institutional accreditation.
+
+\subsection{Script confidentiality}
+Scanned scripts live in private storage with no public URLs. The application issues short-lived signed access only after the database has confirmed the requester is the assigned evaluator, the assigned moderator, a Controller, or the owning student after publication. Scripts are therefore never reachable by guessing a link.
+
+\section{Evaluation Workflow}
+The complete lifecycle of a script is:
+\begin{enumerate}
+\item \textbf{Setup.} The Controller creates an examination with questions, maximum marks and model answers, and uploads scanned scripts, which are assigned anonymised codes.
+\item \textbf{Assignment.} The Controller assigns each script to an evaluator and a moderator. Reassignment is supported and recorded.
+\item \textbf{Marking.} The evaluator opens the script in the marking workspace, enters per-question marks and remarks, optionally saves a draft, and submits. Marks are validated against question limits on entry and again on the server.
+\item \textbf{Moderation.} The moderator reviews the submitted evaluation. Any mark change requires a reason and is written to the revision log.
+\item \textbf{Tabulation and publication.} The system totals marks automatically -- using the moderated mark where one exists -- computes percentages and grades, and the Controller publishes. Students then see their results.
+\end{enumerate}
+Grade bands are configurable; the deployment uses O ($\geq$90), A+ ($\geq$80), A ($\geq$70), B+ ($\geq$60), B ($\geq$50), C ($\geq$40) and F below 40.
+
+\section{Intelligent Analytics}
+\subsection{Anomaly detection in marking}
+To support quality assurance, the DES includes an Intelligent Evaluation Analytics dashboard. Marking data -- either captured live from the database or uploaded as CSV/Excel files -- is sent to a separate Python service built with FastAPI and scikit-learn. The service runs Isolation Forest \cite{liu2008} over numeric features such as per-question marks, totals, moderation deltas and marking duration, with configurable estimator count and contamination. It returns an anomaly score and a normal/anomalous label for each record, together with unsupervised quality metrics, and precision, recall, F1 and a confusion matrix when labelled validation data is supplied.
+
+Flagged records appear in a moderator review queue where the moderator inspects the record, sees its anomaly score, adds a comment and marks the case as reviewed or requiring further investigation. The flags are strictly advisory: no code path allows a prediction to write or change a mark. Communication with the service is authenticated with a shared key, and results are stored in the database with role-scoped policies.
+
+\subsection{AI-assisted marking}
+The marking workspace can request a suggested mark per question from a large language model, given the question, the model answer, the maximum marks and the student's answer. The suggestion is displayed beside the mark field with a one-sentence justification, clamped to the question's limit, and is never written automatically: the evaluator must enter or explicitly accept a value. A companion study on the public ASAP-SAS dataset (13,634 answers) found that the best classical model reaches a quadratic weighted kappa of 0.662 and a zero-shot LLM 0.541, against human agreement of 0.906 -- which is precisely why the system keeps humans accountable for every mark.
+
+\section{Implementation and Testing}
+The application is implemented in React with TypeScript, styled with a consistent institutional design system, and responsive down to phone widths. The analytics service is a FastAPI application deployed independently, so the machine-learning stack can scale and be maintained separately from the web application.
+
+Functional testing covered the complete workflow end to end: account creation and role assignment, exam setup, script upload, assignment and reassignment, draft saving, submission, moderation with and without reasons, publication and the student view. Security testing exercised nine row-level-security cases, confirming for example that an evaluator cannot read another evaluator's queue, that identity columns are invisible to markers, and that students cannot read unpublished results. Automated unit tests cover the grading rules, the anomaly-detection helpers and the mark-clamping logic, and the analytics service has its own test suite.
+
+\section{Limitations and Future Work}
+The system assumes scripts are scanned before upload; handwriting recognition is not yet integrated, so the AI assistant currently works best on typed or transcribed answers. The anomaly detector flags statistical outliers, which include genuinely unusual but legitimate marking; human review remains essential. Future work includes OCR of handwritten scripts, fine-tuned scoring models trained on the institution's own moderated marks, calibration analytics across evaluators, and a controlled study of how AI suggestions affect marking time and consistency.
+
+\section{Conclusion}
+We presented a Digital Evaluation System that digitises the full examination evaluation pipeline with security enforced at the database layer, complete auditability of every mark change, and intelligent analytics that support -- but never replace -- human examiners. The system is deployed and has been tested end to end across all four roles. Its design demonstrates that automation and accountability are not in conflict: by keeping every mark human-authored and every change logged, the system gains the speed of digital evaluation without sacrificing the trustworthiness of the traditional process.
+
+\begin{thebibliography}{10}
+\bibitem{burrows2015} S.~Burrows, I.~Gurevych, and B.~Stein, ``The eras and trends of automatic short answer grading,'' \emph{Int. J. Artif. Intell. Educ.}, vol.~25, no.~1, pp.~60--117, 2015.
+\bibitem{shermis2014} M.~D.~Shermis, ``State-of-the-art automated essay scoring: Competition, results, and future directions from a United States demonstration,'' \emph{Assessing Writing}, vol.~20, pp.~53--76, 2014.
+\bibitem{liu2008} F.~T.~Liu, K.~M.~Ting, and Z.-H.~Zhou, ``Isolation forest,'' in \emph{Proc. IEEE ICDM}, 2008, pp.~413--422.
+\bibitem{cohen1968} J.~Cohen, ``Weighted kappa: Nominal scale agreement provision for scaled disagreement or partial credit,'' \emph{Psychological Bulletin}, vol.~70, no.~4, pp.~213--220, 1968.
+\bibitem{pedregosa2011} F.~Pedregosa \emph{et al.}, ``Scikit-learn: Machine learning in Python,'' \emph{J. Mach. Learn. Res.}, vol.~12, pp.~2825--2830, 2011.
+\end{thebibliography}
+\end{document}
