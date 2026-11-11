@@ -19,3 +19,8 @@
 - [x] Add the implemented system architecture diagram
 - [x] Rebuild the paper with only abstract, keywords, introduction, methodology, results, conclusion and references
 - [x] Inspect every generated page and deliver the revised PDF/source
+
+# University-scale reporting
+- [ ] Add secure question-wise Excel exports for Controller, Evaluator and Moderator
+- [ ] Page export queries beyond 1,000 rows and index high-volume assignment lookups
+- [ ] Test role confidentiality, question-wise values and real downloads in the preview

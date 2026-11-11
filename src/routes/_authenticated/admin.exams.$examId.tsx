@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, StatusBadge } from "@/components/StatusBadge";
+import { QuestionWiseExportButton } from "@/components/QuestionWiseExportButton";
 import { ScriptViewer } from "@/components/ScriptViewer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -250,7 +251,10 @@ function ResultsPanel({ data, nameOf, ownerOf, maxTotal }: { data: ExamData; nam
             <b>{b.grade}</b> {scored.filter((r) => r.grade === b.grade).length}
           </span>
         ))}
-        <Button size="sm" variant="outline" className="ml-auto" onClick={exportCsv}>Download CSV</Button>
+        <div className="ml-auto flex flex-wrap gap-2">
+          <Button size="sm" variant="outline" onClick={exportCsv}>Download CSV</Button>
+          <QuestionWiseExportButton scope="exam" examId={exam.id} disabled={!scripts.length} />
+        </div>
       </div>
       <div className="overflow-x-auto rounded-md border border-border bg-card">
         <table className="w-full text-sm">
