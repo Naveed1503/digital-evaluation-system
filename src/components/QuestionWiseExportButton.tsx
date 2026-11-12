@@ -86,7 +86,7 @@ export function QuestionWiseExportButton(props: Props) {
         type="button"
         variant="outline"
         size="sm"
-        disabled={busy || props.disabled || (needsPick && false)}
+        disabled={busy || props.disabled}
         onClick={exportExcel}
       >
         {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileSpreadsheet className="mr-2 h-4 w-4" />}
