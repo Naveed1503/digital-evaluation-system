@@ -100,7 +100,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
     for (const q of questions) {
       const raw = values[q.id] ?? "";
       if (raw === "") {
-        if (requireAll) { toast.error(`Enter marks for Q${q.number}`); return null; }
+        if (requireAll) { toast.error(`Enter marks for ${questionLabel(q)}`); return null; }
         out[q.id] = "";
         continue;
       }
@@ -110,7 +110,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
         return null;
       }
       if (mode === "moderate" && changed(q.id) && !notes[q.id]?.trim()) {
-        toast.error(`Give a reason for changing Q${q.number}`);
+        toast.error(`Give a reason for changing ${questionLabel(q)}`);
         return null;
       }
       out[q.id] = n;
@@ -196,7 +196,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
                     )}
                     <Input
                       type="number" min={0} max={Number(q.max_marks)} step="0.5" disabled={locked}
-                      aria-label={`Marks for question ${q.number}`}
+                      aria-label={`Marks for question ${questionLabel(q).slice(1)}`}
                       value={values[q.id] ?? ""}
                       onChange={(e) => setValues((s) => ({ ...s, [q.id]: e.target.value }))}
                       className="h-11 w-20 font-mono text-base"
