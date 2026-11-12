@@ -51,7 +51,7 @@ export const getQuestionWiseReport = createServerFn({ method: "POST" })
         sb.from("exams").select("id, code, title, course, exam_date, status").in("id", ids).order("id").range(from, to),
       )),
       inIdChunks(examIds, (ids) => fetchAllPages((from, to) =>
-        sb.from("questions").select("id, exam_id, number, label, max_marks").in("exam_id", ids).order("exam_id").order("number").range(from, to),
+        sb.from("questions").select("id, exam_id, number, part, label, max_marks").in("exam_id", ids).order("exam_id").order("number").range(from, to),
       )),
       inIdChunks(scriptIds, (ids) => fetchAllPages((from, to) =>
         sb.from("marks").select("script_id, question_id, evaluator_marks, moderated_marks, evaluator_remark, moderation_reason")
@@ -78,7 +78,7 @@ export const getQuestionWiseReport = createServerFn({ method: "POST" })
       scope,
       generatedAt: new Date().toISOString(),
       exams: exams.map((e) => ({ id: e.id, code: e.code, title: e.title, course: e.course, examDate: e.exam_date, status: e.status })),
-      questions: questions.map((q) => ({ id: q.id, examId: q.exam_id, number: q.number, label: q.label, maxMarks: Number(q.max_marks) })),
+      questions: questions.map((q) => ({ id: q.id, examId: q.exam_id, number: q.number, part: q.part, label: q.label, maxMarks: Number(q.max_marks) })),
       scripts: scripts.map((s) => ({
         id: s.id, examId: s.exam_id, code: s.code, status: s.status,
         evaluatorId: s.evaluator_id, moderatorId: s.moderator_id,

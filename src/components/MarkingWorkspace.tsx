@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { questionLabel } from "@/lib/question-label";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -29,7 +30,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
         .single();
       if (error) throw error;
       const [{ data: questions }, { data: marks }] = await Promise.all([
-        supabase.from("questions").select("*").eq("exam_id", script.exam_id).order("number"),
+        supabase.from("questions").select("*").eq("exam_id", script.exam_id).order("number").order("part"),
         supabase.from("marks").select("*").eq("script_id", scriptId),
       ]);
       return { script, questions: questions ?? [], marks: marks ?? [] };
@@ -99,17 +100,17 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
     for (const q of questions) {
       const raw = values[q.id] ?? "";
       if (raw === "") {
-        if (requireAll) { toast.error(`Enter marks for Q${q.number}`); return null; }
+        if (requireAll) { toast.error(`Enter marks for ${questionLabel(q)}`); return null; }
         out[q.id] = "";
         continue;
       }
       const n = Number(raw);
       if (Number.isNaN(n) || n < 0 || n > Number(q.max_marks)) {
-        toast.error(`Q${q.number}: marks must be between 0 and ${q.max_marks}`);
+        toast.error(`${questionLabel(q)}: marks must be between 0 and ${q.max_marks}`);
         return null;
       }
       if (mode === "moderate" && changed(q.id) && !notes[q.id]?.trim()) {
-        toast.error(`Give a reason for changing Q${q.number}`);
+        toast.error(`Give a reason for changing ${questionLabel(q)}`);
         return null;
       }
       out[q.id] = n;
@@ -187,7 +188,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
                 <div key={q.id} className={`rounded-sm border p-3 ${isChanged ? "border-gold bg-gold/10" : "border-border"}`}>
                   <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
                     <div className="col-span-3 min-w-0">
-                      <p className="text-sm font-semibold">Q{q.number}</p>
+                      <p className="text-sm font-semibold">{questionLabel(q)}</p>
                       {q.label && <p className="text-xs text-muted-foreground">{q.label}</p>}
                     </div>
                     {mode === "moderate" && (
@@ -195,7 +196,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
                     )}
                     <Input
                       type="number" min={0} max={Number(q.max_marks)} step="0.5" disabled={locked}
-                      aria-label={`Marks for question ${q.number}`}
+                      aria-label={`Marks for question ${questionLabel(q).slice(1)}`}
                       value={values[q.id] ?? ""}
                       onChange={(e) => setValues((s) => ({ ...s, [q.id]: e.target.value }))}
                       className="h-11 w-20 font-mono text-base"

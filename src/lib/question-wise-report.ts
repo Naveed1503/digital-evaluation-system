@@ -4,7 +4,7 @@ export type QuestionWiseReport = {
   scope: ReportScope;
   generatedAt: string;
   exams: Array<{ id: string; code: string; title: string; course: string; examDate: string | null; status: string }>;
-  questions: Array<{ id: string; examId: string; number: number; label: string; maxMarks: number }>;
+  questions: Array<{ id: string; examId: string; number: number; part: string; label: string; maxMarks: number }>;
   scripts: Array<{
     id: string;
     examId: string;

@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { questionLabel, nextPart } from "@/lib/question-label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -38,12 +39,12 @@ function useExam(examId: string) {
     queryFn: async () => {
       const [exam, questions, scripts, owners, users, marks, revisions] = await Promise.all([
         supabase.from("exams").select("*").eq("id", examId).single(),
-        supabase.from("questions").select("*").eq("exam_id", examId).order("number"),
+        supabase.from("questions").select("*").eq("exam_id", examId).order("number").order("part"),
         supabase.from("scripts").select("*").eq("exam_id", examId).order("code"),
         supabase.from("script_owners").select("script_id, student_id, scripts!inner(exam_id)").eq("scripts.exam_id", examId),
         supabase.rpc("list_users_with_roles"),
         supabase.from("marks").select("*, scripts!inner(exam_id)").eq("scripts.exam_id", examId),
-        supabase.from("mark_revisions").select("*, scripts!inner(exam_id, code), questions(number)").eq("scripts.exam_id", examId).order("created_at", { ascending: false }),
+        supabase.from("mark_revisions").select("*, scripts!inner(exam_id, code), questions(number, part)").eq("scripts.exam_id", examId).order("created_at", { ascending: false }),
       ]);
       if (exam.error) throw exam.error;
       return {
@@ -192,7 +193,7 @@ function ExamDetail() {
                   <tr key={r.id} className="border-t border-border">
                     <td className="px-4 py-2.5 text-muted-foreground">{new Date(r.created_at).toLocaleString()}</td>
                     <td className="font-mono">{(r.scripts as { code: string } | null)?.code}</td>
-                    <td>Q{(r.questions as { number: number } | null)?.number}</td>
+                    <td>{r.questions ? questionLabel(r.questions as { number: number; part: string }) : ""}</td>
                     <td className="text-center font-mono">{r.old_marks ?? "—"} → <span className="font-bold text-gold">{r.new_marks}</span></td>
                     <td>{r.reason}</td>
                     <td>{nameOf(r.changed_by)}</td>
@@ -243,7 +244,7 @@ function ResultsPanel({ data, nameOf, ownerOf, maxTotal }: { data: ExamData; nam
           <thead className="bg-muted text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Code</th><th>Candidate</th>
-              {questions.map((q) => <th key={q.id} className="text-center">Q{q.number}</th>)}
+              {questions.map((q) => <th key={q.id} className="text-center">{questionLabel(q)}</th>)}
               <th className="text-right">Eval.</th><th className="text-right">Final</th><th className="text-right">%</th><th className="pr-4 text-right">Grade</th>
             </tr>
           </thead>
@@ -391,7 +392,7 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
     onChange();
   }
   async function remove() {
-    if (!confirm(`Remove Q${q.number}?`)) return;
+    if (!confirm(`Remove ${questionLabel(q)}?`)) return;
     const { error } = await supabase.from("questions").delete().eq("id", q.id);
     if (error) { toast.error(error.message); return; }
     onChange();
@@ -399,7 +400,7 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
   if (edit)
     return (
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-border px-3 py-3 sm:flex sm:flex-wrap sm:px-4">
-        <span className="w-8 font-semibold">Q{q.number}</span>
+        <span className="w-8 font-semibold">{questionLabel(q)}</span>
         <Input className="h-8 min-w-0 flex-1" value={label} onChange={(e) => setLabel(e.target.value)} />
         <Input className="h-8 w-20" type="number" step="0.5" value={max} onChange={(e) => setMax(e.target.value)} />
         <Button size="sm" onClick={save}>Save</Button>
@@ -409,7 +410,7 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
     );
   return (
     <div className="grid min-w-0 gap-2 border-b border-border px-4 py-3 sm:flex sm:items-center sm:justify-between">
-      <div><span className="font-semibold">Q{q.number}</span> <span className="text-muted-foreground">{q.label}</span>{q.model_answer ? <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px]">Model answer set</span> : null}</div>
+      <div><span className="font-semibold">{questionLabel(q)}</span> <span className="text-muted-foreground">{q.label}</span>{q.model_answer ? <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px]">Model answer set</span> : null}</div>
       <div className="flex items-center gap-3">
         <span className="font-mono">{q.max_marks} marks</span>
         {editable && (
@@ -427,10 +428,22 @@ function QuestionsPanel({ examId, questions, editable, onChange, maxTotal }: { e
   const [label, setLabel] = useState("");
   const [max, setMax] = useState("10");
   const [model, setModel] = useState("");
+  const [kind, setKind] = useState<"whole" | "part">("whole");
+  const [parent, setParent] = useState("");
+  const lastNo = questions.reduce((m, q) => Math.max(m, q.number), 0);
+  const nextLabel = kind === "whole" ? `Q${lastNo + 1}` : `Q${Number(parent) || lastNo || 1}${nextPart(questions, Number(parent) || lastNo || 1)}`;
   async function add(e: React.FormEvent) {
     e.preventDefault();
-    const number = (questions.at(-1)?.number ?? 0) + 1;
-    const { error } = await supabase.from("questions").insert({ exam_id: examId, number, label, max_marks: Number(max), model_answer: model });
+    const lastNumber = questions.reduce((m, q) => Math.max(m, q.number), 0);
+    let number = lastNumber + 1;
+    let part = "";
+    if (kind === "part") {
+      number = Number(parent) || lastNumber || 1;
+      const siblings = questions.filter((q) => q.number === number);
+      if (siblings.some((q) => !q.part)) { toast.error(`Q${number} is a whole question — remove it or pick another number to split.`); return; }
+      part = nextPart(questions, number);
+    }
+    const { error } = await supabase.from("questions").insert({ exam_id: examId, number, part, label, max_marks: Number(max), model_answer: model });
     if (error) { toast.error(error.message); return; }
     setLabel(""); setModel("");
     onChange();
@@ -443,9 +456,22 @@ function QuestionsPanel({ examId, questions, editable, onChange, maxTotal }: { e
       </div>
       {editable ? (
         <form onSubmit={add} className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+          <div className="w-full space-y-1 sm:basis-full">
+            <Label>Question type</Label>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button type="button" size="sm" variant={kind === "whole" ? "default" : "outline"} onClick={() => setKind("whole")}>Whole question</Button>
+              <Button type="button" size="sm" variant={kind === "part" ? "default" : "outline"} onClick={() => setKind("part")}>Sub-part (1a, 1b…)</Button>
+              {kind === "part" && (
+                <span className="flex items-center gap-2 text-sm">of question
+                  <Input className="h-8 w-20" type="number" min={1} value={parent} placeholder={String(lastNo || 1)} onChange={(e) => setParent(e.target.value)} />
+                </span>
+              )}
+              <span className="text-xs text-muted-foreground">Will be added as <strong>{nextLabel}</strong></span>
+            </div>
+          </div>
           <div className="flex-1 space-y-1"><Label>Question topic (optional)</Label><Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. Stacks & queues" /></div>
           <div className="w-full space-y-1 sm:w-28"><Label>Max marks</Label><Input type="number" min={0.5} step="0.5" required value={max} onChange={(e) => setMax(e.target.value)} /></div>
-          <Button type="submit">Add question</Button>
+          <Button type="submit">Add {nextLabel}</Button>
           <div className="w-full space-y-1 sm:basis-full"><Label>Model answer / key points (optional, used by AI marking assistant)</Label><Textarea value={model} onChange={(e) => setModel(e.target.value)} placeholder="e.g. Stack is LIFO; push adds on top; pop removes top; overflow when full" /></div>
         </form>
       ) : (
@@ -465,7 +491,7 @@ function ScriptIntake({ examId, questions, students, onDone }: { examId: string;
   async function createScript(opts: { studentId?: string | undefined; file?: File | null }) {
     const { data: s, error } = await supabase
       .from("scripts")
-      .insert({ exam_id: examId, code: generateScriptCode(), sample_answers: opts.file ? null : makeSampleAnswers(questions.map((q) => q.number)) })
+      .insert({ exam_id: examId, code: generateScriptCode(), sample_answers: opts.file ? null : makeSampleAnswers([...new Set(questions.map((q) => q.number))]) })
       .select()
       .single();
     if (error) throw error;

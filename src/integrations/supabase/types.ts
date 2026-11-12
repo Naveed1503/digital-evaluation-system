@@ -356,6 +356,7 @@ export type Database = {
           max_marks: number
           model_answer: string
           number: number
+          part: string
         }
         Insert: {
           exam_id: string
@@ -364,6 +365,7 @@ export type Database = {
           max_marks: number
           model_answer?: string
           number: number
+          part?: string
         }
         Update: {
           exam_id?: string
@@ -372,6 +374,7 @@ export type Database = {
           max_marks?: number
           model_answer?: string
           number?: number
+          part?: string
         }
         Relationships: [
           {
