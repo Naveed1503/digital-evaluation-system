@@ -221,23 +221,6 @@ function ResultsPanel({ data, nameOf, ownerOf, maxTotal }: { data: ExamData; nam
   const passed = scored.filter((r) => r.grade !== "F").length;
   const highest = scored.reduce((m, r) => Math.max(m, Number(r.fin)), 0);
 
-  function exportCsv() {
-    const head = ["Script", "Candidate", ...questions.map((q) => `Q${q.number}`), "Evaluator total", "Final total", "Percentage", "Grade"];
-    const lines = rows.map(({ s, pct, grade }) => [
-      s.code, nameOf(ownerOf(s.id)),
-      ...questions.map((q) => {
-        const m = marks.find((x) => x.script_id === s.id && x.question_id === q.id);
-        return m ? (finalMark(m.evaluator_marks, m.moderated_marks) ?? "") : "";
-      }),
-      s.evaluator_total ?? "", s.final_total ?? "", pct ?? "", grade ?? "",
-    ]);
-    const csv = [head, ...lines].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
-    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-    const a = document.createElement("a");
-    a.href = url; a.download = `${exam.code}-results.csv`; a.click();
-    URL.revokeObjectURL(url);
-  }
-
   return (
     <div>
       <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -252,7 +235,6 @@ function ResultsPanel({ data, nameOf, ownerOf, maxTotal }: { data: ExamData; nam
           </span>
         ))}
         <div className="ml-auto flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" onClick={exportCsv}>Download CSV</Button>
           <QuestionWiseExportButton scope="exam" examId={exam.id} disabled={!scripts.length} />
         </div>
       </div>

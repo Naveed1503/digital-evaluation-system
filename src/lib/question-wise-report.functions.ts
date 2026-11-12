@@ -6,8 +6,8 @@ import type { QuestionWiseReport, ReportScope } from "./question-wise-report";
 
 const inputSchema = z.discriminatedUnion("scope", [
   z.object({ scope: z.literal("exam"), examId: z.string().uuid() }),
-  z.object({ scope: z.literal("evaluator") }),
-  z.object({ scope: z.literal("moderator") }),
+  z.object({ scope: z.literal("evaluator"), examId: z.string().uuid().optional() }),
+  z.object({ scope: z.literal("moderator"), examId: z.string().uuid().optional() }),
 ]);
 
 async function inIdChunks<T>(ids: string[], fetchChunk: (chunk: string[]) => Promise<T[]>): Promise<T[]> {
@@ -37,6 +37,7 @@ export const getQuestionWiseReport = createServerFn({ method: "POST" })
       if (data.scope === "exam") query = query.eq("exam_id", data.examId);
       if (data.scope === "evaluator") query = query.eq("evaluator_id", context.userId);
       if (data.scope === "moderator") query = query.eq("moderator_id", context.userId);
+      if (data.scope !== "exam" && data.examId) query = query.eq("exam_id", data.examId);
       return query.order("exam_id").order("id").range(from, to);
     });
 

@@ -114,8 +114,9 @@ export function buildQuestionWiseWorkbook(report: QuestionWiseReport) {
   return workbook;
 }
 
-export function downloadQuestionWiseWorkbook(report: QuestionWiseReport) {
+export function downloadQuestionWiseWorkbook(report: QuestionWiseReport, subjectCode?: string) {
   const workbook = buildQuestionWiseWorkbook(report);
   const date = report.generatedAt.slice(0, 10);
-  XLSX.writeFile(workbook, `question-wise-marks-${report.scope}-${date}.xlsx`, { compression: true });
+  const subject = subjectCode ? `-${subjectCode.replace(/[^a-z0-9-]/gi, "")}` : "";
+  XLSX.writeFile(workbook, `question-wise-marks${subject}-${report.scope}-${date}.xlsx`, { compression: true });
 }
