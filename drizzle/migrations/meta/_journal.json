@@ -50,6 +50,13 @@
       "when": 1794509285109,
       "tag": "0006_question_sub_parts",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794510847441,
+      "tag": "0007_publish_without_moderator",
+      "breakpoints": true
     }
   ]
 }

@@ -82,6 +82,7 @@ function ExamDetail() {
     unassigned: scripts.filter((s) => s.status === "unassigned").length,
     evaluated: scripts.filter((s) => ["evaluated", "moderated"].includes(s.status)).length,
     moderated: scripts.filter((s) => s.status === "moderated").length,
+    ready: scripts.filter((s) => s.status === "moderated" || (s.status === "evaluated" && !s.moderator_id)).length,
   };
   const published = exam.status === "published";
 
@@ -121,7 +122,7 @@ function ExamDetail() {
             <Button variant="outline" onClick={autoAssign} disabled={!counts.unassigned || !questions.length}>
               Auto-assign ({counts.unassigned})
             </Button>
-            <Button onClick={publish} disabled={!counts.total || counts.moderated !== counts.total}>Publish results</Button>
+            <Button onClick={publish} disabled={!counts.total || counts.ready !== counts.total}>Publish results</Button>
           </>
         )}
       </PageHeader>
