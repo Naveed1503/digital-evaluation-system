@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { questionLabel } from "@/lib/question-label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -38,7 +39,7 @@ function useExam(examId: string) {
     queryFn: async () => {
       const [exam, questions, scripts, owners, users, marks, revisions] = await Promise.all([
         supabase.from("exams").select("*").eq("id", examId).single(),
-        supabase.from("questions").select("*").eq("exam_id", examId).order("number"),
+        supabase.from("questions").select("*").eq("exam_id", examId).order("number").order("part"),
         supabase.from("scripts").select("*").eq("exam_id", examId).order("code"),
         supabase.from("script_owners").select("script_id, student_id, scripts!inner(exam_id)").eq("scripts.exam_id", examId),
         supabase.rpc("list_users_with_roles"),
@@ -243,7 +244,7 @@ function ResultsPanel({ data, nameOf, ownerOf, maxTotal }: { data: ExamData; nam
           <thead className="bg-muted text-left text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Code</th><th>Candidate</th>
-              {questions.map((q) => <th key={q.id} className="text-center">Q{q.number}</th>)}
+              {questions.map((q) => <th key={q.id} className="text-center">{questionLabel(q)}</th>)}
               <th className="text-right">Eval.</th><th className="text-right">Final</th><th className="text-right">%</th><th className="pr-4 text-right">Grade</th>
             </tr>
           </thead>
@@ -391,7 +392,7 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
     onChange();
   }
   async function remove() {
-    if (!confirm(`Remove Q${q.number}?`)) return;
+    if (!confirm(`Remove ${questionLabel(q)}?`)) return;
     const { error } = await supabase.from("questions").delete().eq("id", q.id);
     if (error) { toast.error(error.message); return; }
     onChange();
@@ -399,7 +400,7 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
   if (edit)
     return (
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-border px-3 py-3 sm:flex sm:flex-wrap sm:px-4">
-        <span className="w-8 font-semibold">Q{q.number}</span>
+        <span className="w-8 font-semibold">{questionLabel(q)}</span>
         <Input className="h-8 min-w-0 flex-1" value={label} onChange={(e) => setLabel(e.target.value)} />
         <Input className="h-8 w-20" type="number" step="0.5" value={max} onChange={(e) => setMax(e.target.value)} />
         <Button size="sm" onClick={save}>Save</Button>
@@ -409,7 +410,7 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
     );
   return (
     <div className="grid min-w-0 gap-2 border-b border-border px-4 py-3 sm:flex sm:items-center sm:justify-between">
-      <div><span className="font-semibold">Q{q.number}</span> <span className="text-muted-foreground">{q.label}</span>{q.model_answer ? <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px]">Model answer set</span> : null}</div>
+      <div><span className="font-semibold">{questionLabel(q)}</span> <span className="text-muted-foreground">{q.label}</span>{q.model_answer ? <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px]">Model answer set</span> : null}</div>
       <div className="flex items-center gap-3">
         <span className="font-mono">{q.max_marks} marks</span>
         {editable && (

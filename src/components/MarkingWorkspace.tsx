@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { questionLabel } from "@/lib/question-label";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -29,7 +30,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
         .single();
       if (error) throw error;
       const [{ data: questions }, { data: marks }] = await Promise.all([
-        supabase.from("questions").select("*").eq("exam_id", script.exam_id).order("number"),
+        supabase.from("questions").select("*").eq("exam_id", script.exam_id).order("number").order("part"),
         supabase.from("marks").select("*").eq("script_id", scriptId),
       ]);
       return { script, questions: questions ?? [], marks: marks ?? [] };
@@ -105,7 +106,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
       }
       const n = Number(raw);
       if (Number.isNaN(n) || n < 0 || n > Number(q.max_marks)) {
-        toast.error(`Q${q.number}: marks must be between 0 and ${q.max_marks}`);
+        toast.error(`${questionLabel(q)}: marks must be between 0 and ${q.max_marks}`);
         return null;
       }
       if (mode === "moderate" && changed(q.id) && !notes[q.id]?.trim()) {
@@ -187,7 +188,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
                 <div key={q.id} className={`rounded-sm border p-3 ${isChanged ? "border-gold bg-gold/10" : "border-border"}`}>
                   <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
                     <div className="col-span-3 min-w-0">
-                      <p className="text-sm font-semibold">Q{q.number}</p>
+                      <p className="text-sm font-semibold">{questionLabel(q)}</p>
                       {q.label && <p className="text-xs text-muted-foreground">{q.label}</p>}
                     </div>
                     {mode === "moderate" && (

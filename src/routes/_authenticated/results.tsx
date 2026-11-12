@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { questionLabel } from "@/lib/question-label";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/StatusBadge";
@@ -32,7 +33,7 @@ function ResultsPage() {
       const out = [];
       for (const s of scripts ?? []) {
         const [{ data: qs }, { data: ms }] = await Promise.all([
-          supabase.from("questions").select("*").eq("exam_id", s.exam_id).order("number"),
+          supabase.from("questions").select("*").eq("exam_id", s.exam_id).order("number").order("part"),
           supabase.from("marks").select("*").eq("script_id", s.id),
         ]);
         out.push({ script: s, questions: qs ?? [], marks: ms ?? [] });
@@ -82,7 +83,7 @@ function ResultsPage() {
                       const m = marks.find((x) => x.question_id === q.id);
                       return (
                         <tr key={q.id} className="border-t border-border">
-                          <td className="py-2 font-sans">Q{q.number} {q.label && <span className="text-muted-foreground">· {q.label}</span>}</td>
+                          <td className="py-2 font-sans">{questionLabel(q)} {q.label && <span className="text-muted-foreground">· {q.label}</span>}</td>
                           <td className="text-right">{q.max_marks}</td>
                           <td className="text-right">{m ? finalMark(m.evaluator_marks, m.moderated_marks) : "—"}</td>
                         </tr>
