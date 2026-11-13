@@ -29,3 +29,8 @@
 - [x] Audit architecture, page connections, SQL workflow, analytics and deployment.
 - [x] Run current tests and distinguish verified evidence from historical claims.
 - [x] Generate and visually inspect complete PDF and editable Word report.
+
+# Website logo
+- [ ] Create and inspect two logo concepts; choose the clearest institutional design.
+- [ ] Add the selected logo to homepage, login, portal navigation and favicon.
+- [ ] Verify branding on desktop and phone layouts.
