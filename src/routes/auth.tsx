@@ -1,13 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Landmark, ShieldCheck, EyeOff, History } from "lucide-react";
+import { ShieldCheck, EyeOff, History } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import heroVisual from "@/assets/hero-visual.jpg";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -88,9 +89,7 @@ function AuthPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-deep via-primary/60 to-primary/40" />
         <div className="relative flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-gold/15 ring-1 ring-gold/40">
-            <Landmark className="h-5 w-5 text-gold" />
-          </div>
+          <BrandLogo className="h-14 w-14" />
           <div>
             <p className="font-serif text-lg leading-tight">Digital Evaluation System</p>
             <p className="text-[10px] uppercase tracking-[0.18em] text-primary-foreground/50">Office of the Controller</p>
@@ -117,9 +116,7 @@ function AuthPage() {
       <div className="flex items-center justify-center bg-background px-5 py-8 sm:p-8">
         <form onSubmit={submit} className="w-full max-w-sm animate-fade-up space-y-5">
           <div className="mb-6 flex min-w-0 items-center gap-3 lg:hidden">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/5 ring-1 ring-primary/15">
-              <Landmark className="h-4.5 w-4.5 text-primary" />
-            </div>
+            <BrandLogo className="h-12 w-12" />
             <p className="min-w-0 font-serif text-base sm:text-lg">Digital Evaluation System</p>
           </div>
           <div>

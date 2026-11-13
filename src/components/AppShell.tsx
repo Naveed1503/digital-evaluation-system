@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   GraduationCap,
   LogOut,
-  Landmark,
   Menu,
   BrainCircuit,
   BarChart3,
@@ -20,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe, type AppRole } from "@/hooks/use-auth";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const NAV: { to: string; label: string; roles: AppRole[]; icon: typeof LayoutDashboard }[] = [
   { to: "/dashboard", label: "Dashboard", roles: ["admin", "evaluator", "moderator", "student"], icon: LayoutDashboard },
@@ -61,9 +61,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const sidebar = (
     <>
         <div className="flex items-center gap-3 border-b border-sidebar-border px-5 py-5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-sidebar-primary/15 ring-1 ring-sidebar-primary/40">
-            <Landmark className="h-5 w-5 text-sidebar-primary" />
-          </div>
+          <BrandLogo className="h-11 w-11" />
           <div className="min-w-0">
             <p className="eyebrow text-[10px] text-sidebar-primary">Office of the Controller</p>
             <p className="mt-0.5 font-serif text-[15px] leading-tight text-sidebar-accent-foreground">
@@ -120,7 +118,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-dvh lg:flex">
       <header className="sticky top-0 z-40 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-sidebar-border bg-sidebar px-4 py-3 text-sidebar-foreground lg:hidden">
         <Link to="/dashboard" className="flex min-w-0 items-center gap-2.5">
-          <Landmark className="h-5 w-5 shrink-0 text-sidebar-primary" />
+          <BrandLogo className="h-9 w-9" />
           <span className="min-w-0 font-serif text-sm leading-snug">Digital Evaluation System</span>
         </Link>
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
