@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Landmark,
   ArrowRight,
   ShieldCheck,
   FileStack,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroVisual from "@/assets/hero-visual.jpg";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -94,9 +94,7 @@ function Index() {
       <nav className="fixed inset-x-0 top-0 z-50 glass-dark border-b border-primary-foreground/10">
         <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:flex sm:justify-between sm:px-6 sm:py-3.5">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gold/15 ring-1 ring-gold/40">
-              <Landmark className="h-4.5 w-4.5 text-gold" />
-            </div>
+            <BrandLogo className="h-11 w-11" />
             <div>
               <p className="font-serif text-sm leading-tight text-primary-foreground sm:text-[15px]">Digital Evaluation System</p>
               <p className="hidden text-[10px] uppercase tracking-[0.18em] text-primary-foreground/50 sm:block">Office of the Controller</p>
@@ -286,9 +284,7 @@ function Index() {
       <footer className="border-t border-border bg-card">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-8">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/5 ring-1 ring-primary/15">
-              <Landmark className="h-4 w-4 text-primary" />
-            </div>
+            <BrandLogo className="h-10 w-10" />
             <p className="font-serif text-sm">Digital Evaluation System</p>
           </div>
           <p className="text-xs text-muted-foreground">
