@@ -19,3 +19,4 @@
 - ML anomaly flags are advisory: moderators record decisions only via review_ml_flag(); no ML code path writes to marks.
 - AI suggested marks (src/lib/ai-mark.*) are suggestions only; the evaluator must enter/accept marks, and values are clamped to each question's limits.
 - research/ holds the ASAP-SAS paper experiment (Python, not part of the web app); every number in research/paper/paper.tex is generated from research/outputs by make_paper.py, so rerun rather than hand-edit results.
+- Reuse BrandLogo for website branding and derive browser icons from its image source so all surfaces retain the same logo.
