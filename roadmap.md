@@ -31,6 +31,6 @@
 - [x] Generate and visually inspect complete PDF and editable Word report.
 
 # Website logo
-- [ ] Create and inspect two logo concepts; choose the clearest institutional design.
-- [ ] Add the selected logo to homepage, login, portal navigation and favicon.
-- [ ] Verify branding on desktop and phone layouts.
+- [x] Create and inspect two logo concepts; choose the clearest institutional design.
+- [x] Add the selected logo to homepage, login, portal navigation and favicon.
+- [x] Verify branding on desktop and phone layouts.
