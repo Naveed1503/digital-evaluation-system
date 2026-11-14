@@ -34,3 +34,8 @@
 - [x] Create and inspect two logo concepts; choose the clearest institutional design.
 - [x] Add the selected logo to homepage, login, portal navigation and favicon.
 - [x] Verify branding on desktop and phone layouts.
+
+# IEEE paper with expected results
+- [x] Verify implementation, dataset facts and literature references.
+- [x] Generate the requested Roman-numbered paper with factual graphs.
+- [x] Inspect every PDF page and deliver the paper.
