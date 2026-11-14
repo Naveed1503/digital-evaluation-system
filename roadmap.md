@@ -39,3 +39,8 @@
 - [x] Verify implementation, dataset facts and literature references.
 - [x] Generate the requested Roman-numbered paper with factual graphs.
 - [x] Inspect every PDF page and deliver the paper.
+
+# Expanded IEEE paper
+- [ ] Expand to 7–8 substantive pages with the same six Roman-numbered sections.
+- [ ] Verify 10–12 references and retain synthetic-experiment caveats.
+- [ ] Inspect every page and deliver the versioned PDF.
