@@ -36,6 +36,6 @@
 - [x] Verify branding on desktop and phone layouts.
 
 # IEEE paper with expected results
-- [ ] Verify implementation, dataset facts and literature references.
-- [ ] Generate the requested Roman-numbered paper with factual graphs.
-- [ ] Inspect every PDF page and deliver the paper.
+- [x] Verify implementation, dataset facts and literature references.
+- [x] Generate the requested Roman-numbered paper with factual graphs.
+- [x] Inspect every PDF page and deliver the paper.
