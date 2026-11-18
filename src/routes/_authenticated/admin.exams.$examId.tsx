@@ -1,3 +1,4 @@
+import { examMaxTotal } from "@/lib/question-label";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { questionLabel, nextPart } from "@/lib/question-label";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -76,7 +77,7 @@ function ExamDetail() {
     return u?.full_name || u?.email || "—";
   };
   const ownerOf = (sid: string) => owners.find((o) => o.script_id === sid)?.student_id ?? null;
-  const maxTotal = questions.reduce((s, q) => s + Number(q.max_marks), 0);
+  const maxTotal = examMaxTotal(questions);
   const counts = {
     total: scripts.length,
     unassigned: scripts.filter((s) => s.status === "unassigned").length,
@@ -145,7 +146,7 @@ function ExamDetail() {
         </TabsList>
 
         <TabsContent value="questions" className="mt-6">
-          <QuestionsPanel examId={examId} questions={questions} editable={exam.status === "draft"} onChange={refresh} maxTotal={maxTotal} />
+          <QuestionsPanel examId={examId} pattern={exam.pattern} questions={questions} editable={exam.status === "draft"} onChange={refresh} maxTotal={maxTotal} />
         </TabsContent>
 
         <TabsContent value="scripts" className="mt-6">
@@ -411,7 +412,7 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
     );
   return (
     <div className="grid min-w-0 gap-2 border-b border-border px-4 py-3 sm:flex sm:items-center sm:justify-between">
-      <div><span className="font-semibold">{questionLabel(q)}</span> <span className="text-muted-foreground">{q.label}</span>{q.model_answer ? <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px]">Model answer set</span> : null}</div>
+      <div>{q.unit != null && <span className="mr-2 rounded-sm bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">Unit {q.unit}</span>}<span className="font-semibold">{questionLabel(q)}</span> <span className="text-muted-foreground">{q.label}</span>{q.model_answer ? <span className="ml-2 rounded-full bg-gold/15 px-2 py-0.5 text-[10px]">Model answer set</span> : null}</div>
       <div className="flex items-center gap-3">
         <span className="font-mono">{q.max_marks} marks</span>
         {editable && (
@@ -425,12 +426,20 @@ function QuestionRow({ q, editable, onChange }: { q: Q; editable: boolean; onCha
   );
 }
 
-function QuestionsPanel({ examId, questions, editable, onChange, maxTotal }: { examId: string; questions: Q[]; editable: boolean; onChange: () => void; maxTotal: number }) {
+function QuestionsPanel({ examId, pattern, questions, editable, onChange, maxTotal }: { examId: string; pattern: string; questions: Q[]; editable: boolean; onChange: () => void; maxTotal: number }) {
   const [label, setLabel] = useState("");
   const [max, setMax] = useState("10");
   const [model, setModel] = useState("");
   const [kind, setKind] = useState<"whole" | "part">("whole");
   const [parent, setParent] = useState("");
+  const semester = pattern === "semester";
+  const lastUnit = questions.reduce((m, q) => Math.max(m, q.unit ?? 0), 0);
+  const [unit, setUnit] = useState("");
+  async function setPattern(p: "internal" | "semester") {
+    const { error } = await supabase.from("exams").update({ pattern: p }).eq("id", examId);
+    if (error) { toast.error(error.message); return; }
+    onChange();
+  }
   const lastNo = questions.reduce((m, q) => Math.max(m, q.number), 0);
   const nextLabel = kind === "whole" ? `Q${lastNo + 1}` : `Q${Number(parent) || lastNo || 1}${nextPart(questions, Number(parent) || lastNo || 1)}`;
   async function add(e: React.FormEvent) {
@@ -444,13 +453,21 @@ function QuestionsPanel({ examId, questions, editable, onChange, maxTotal }: { e
       if (siblings.some((q) => !q.part)) { toast.error(`Q${number} is a whole question — remove it or pick another number to split.`); return; }
       part = nextPart(questions, number);
     }
-    const { error } = await supabase.from("questions").insert({ exam_id: examId, number, part, label, max_marks: Number(max), model_answer: model });
+    const { error } = await supabase.from("questions").insert({ exam_id: examId, number, part, unit: semester ? Number(unit) || lastUnit || 1 : null, label, max_marks: Number(max), model_answer: model });
     if (error) { toast.error(error.message); return; }
     setLabel(""); setModel("");
     onChange();
   }
   return (
     <div className="max-w-2xl">
+      <div className="mb-4 rounded-md border border-border bg-card p-4">
+        <Label>Exam pattern</Label>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Button type="button" size="sm" disabled={!editable} variant={!semester ? "default" : "outline"} onClick={() => setPattern("internal")}>Internal (1a, 1b, 2…)</Button>
+          <Button type="button" size="sm" disabled={!editable} variant={semester ? "default" : "outline"} onClick={() => setPattern("semester")}>Semester (units with choice)</Button>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">{semester ? "Each unit holds alternative questions (e.g. Unit 1: Q1 or Q2). Students answer either; the better answer in each unit counts." : "Every question is compulsory and all marks add up."}</p>
+      </div>
       <div className="overflow-x-auto rounded-md border border-border bg-card">
         {questions.map((q) => <QuestionRow key={q.id} q={q} editable={editable} onChange={onChange} />)}
         <div className="flex justify-between bg-muted px-4 py-3 font-semibold"><span>Maximum marks</span><span className="font-mono">{maxTotal}</span></div>
@@ -471,6 +488,7 @@ function QuestionsPanel({ examId, questions, editable, onChange, maxTotal }: { e
             </div>
           </div>
           <div className="flex-1 space-y-1"><Label>Question topic (optional)</Label><Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. Stacks & queues" /></div>
+          {semester && <div className="w-full space-y-1 sm:w-24"><Label>Unit</Label><Input type="number" min={1} value={unit} placeholder={String(lastUnit || 1)} onChange={(e) => setUnit(e.target.value)} /></div>}
           <div className="w-full space-y-1 sm:w-28"><Label>Max marks</Label><Input type="number" min={0.5} step="0.5" required value={max} onChange={(e) => setMax(e.target.value)} /></div>
           <Button type="submit">Add {nextLabel}</Button>
           <div className="w-full space-y-1 sm:basis-full"><Label>Model answer / key points (optional, used by AI marking assistant)</Label><Textarea value={model} onChange={(e) => setModel(e.target.value)} placeholder="e.g. Stack is LIFO; push adds on top; pop removes top; overflow when full" /></div>

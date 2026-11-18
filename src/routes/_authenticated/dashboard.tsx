@@ -1,3 +1,4 @@
+import { examMaxTotal } from "@/lib/question-label";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -276,8 +277,8 @@ function StudentPanel() {
       const { data: scripts } = await supabase.from("scripts").select("id, final_total, evaluator_total, exam_id, exams(code,title)").in("id", ids);
       const out = [];
       for (const s of scripts ?? []) {
-        const { data: qs } = await supabase.from("questions").select("max_marks").eq("exam_id", s.exam_id);
-        const max = (qs ?? []).reduce((a, q) => a + Number(q.max_marks), 0);
+        const { data: qs } = await supabase.from("questions").select("max_marks, number, part, unit").eq("exam_id", s.exam_id);
+        const max = examMaxTotal(qs ?? []);
         out.push({ ...s, max });
       }
       return out;

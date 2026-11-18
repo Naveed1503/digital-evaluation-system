@@ -1,3 +1,4 @@
+import { examMaxTotal } from "@/lib/question-label";
 import { createFileRoute } from "@tanstack/react-router";
 import { questionLabel } from "@/lib/question-label";
 import { useQuery } from "@tanstack/react-query";
@@ -57,7 +58,7 @@ function ResultsPage() {
         <div className="space-y-6">
           {data.map(({ script, questions, marks }) => {
             const exam = script.exams as { code: string; title: string; course: string; exam_date: string | null };
-            const max = questions.reduce((s, q) => s + Number(q.max_marks), 0);
+            const max = examMaxTotal(questions);
             const total = Number(script.final_total ?? script.evaluator_total ?? 0);
             const pct = percentage(total, max);
             const g = gradeFor(pct);

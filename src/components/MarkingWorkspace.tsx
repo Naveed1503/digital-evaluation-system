@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { questionLabel } from "@/lib/question-label";
+import { questionLabel, bestOfTotal, examMaxTotal } from "@/lib/question-label";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -25,7 +25,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
     queryFn: async () => {
       const { data: script, error } = await supabase
         .from("scripts")
-        .select("*, exams(code,title,status)")
+        .select("*, exams(code,title,status,pattern)")
         .eq("id", scriptId)
         .single();
       if (error) throw error;
@@ -74,12 +74,13 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
     setRemark(data.marks.find((m) => m.remark)?.remark ?? "");
   }, [data, mode]);
 
-  const total = useMemo(() => Object.values(values).reduce((s, v) => s + (Number(v) || 0), 0), [values]);
+  const total = useMemo(() => bestOfTotal(data?.questions ?? [], (q) => Number(values[q.id]) || 0), [values, data]);
 
   if (isLoading || !data) return <p className="text-muted-foreground">Loading script…</p>;
   const { script, questions, marks } = data;
-  const maxTotal = questions.reduce((s, q) => s + Number(q.max_marks), 0);
-  const exam = script.exams as { code: string; title: string; status: string } | null;
+  const maxTotal = examMaxTotal(questions);
+  const exam = script.exams as { code: string; title: string; status: string; pattern: string } | null;
+  const optional = (q: { unit: number | null }) => exam?.pattern === "semester" && q.unit != null;
   const notMine =
     !!me && (mode === "evaluate" ? script.evaluator_id !== me.user.id : script.moderator_id !== me.user.id);
   const locked =
@@ -100,7 +101,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
     for (const q of questions) {
       const raw = values[q.id] ?? "";
       if (raw === "") {
-        if (requireAll) { toast.error(`Enter marks for ${questionLabel(q)}`); return null; }
+        if (requireAll && !optional(q)) { toast.error(`Enter marks for ${questionLabel(q)}`); return null; }
         out[q.id] = "";
         continue;
       }
@@ -188,7 +189,7 @@ export function MarkingWorkspace({ scriptId, mode }: { scriptId: string; mode: "
                 <div key={q.id} className={`rounded-sm border p-3 ${isChanged ? "border-gold bg-gold/10" : "border-border"}`}>
                   <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
                     <div className="col-span-3 min-w-0">
-                      <p className="text-sm font-semibold">{questionLabel(q)}</p>
+                      <p className="text-sm font-semibold">{q.unit != null && <span className="mr-2 rounded-sm bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">Unit {q.unit}</span>}{questionLabel(q)}</p>
                       {q.label && <p className="text-xs text-muted-foreground">{q.label}</p>}
                     </div>
                     {mode === "moderate" && (

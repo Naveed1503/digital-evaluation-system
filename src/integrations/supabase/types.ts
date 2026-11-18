@@ -51,6 +51,7 @@ export type Database = {
           created_at: string
           exam_date: string | null
           id: string
+          pattern: string
           status: Database["public"]["Enums"]["exam_status"]
           title: string
         }
@@ -60,6 +61,7 @@ export type Database = {
           created_at?: string
           exam_date?: string | null
           id?: string
+          pattern?: string
           status?: Database["public"]["Enums"]["exam_status"]
           title: string
         }
@@ -69,6 +71,7 @@ export type Database = {
           created_at?: string
           exam_date?: string | null
           id?: string
+          pattern?: string
           status?: Database["public"]["Enums"]["exam_status"]
           title?: string
         }
@@ -357,6 +360,7 @@ export type Database = {
           model_answer: string
           number: number
           part: string
+          unit: number | null
         }
         Insert: {
           exam_id: string
@@ -366,6 +370,7 @@ export type Database = {
           model_answer?: string
           number: number
           part?: string
+          unit?: number | null
         }
         Update: {
           exam_id?: string
@@ -375,6 +380,7 @@ export type Database = {
           model_answer?: string
           number?: number
           part?: string
+          unit?: number | null
         }
         Relationships: [
           {
@@ -520,6 +526,10 @@ export type Database = {
       save_evaluation_draft: {
         Args: { _marks: Json; _remarks: Json; _script_id: string }
         Returns: undefined
+      }
+      script_total: {
+        Args: { _moderated: boolean; _script_id: string }
+        Returns: number
       }
       submit_evaluation: {
         Args: { _marks: Json; _remarks?: Json; _script_id: string }

@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx";
 import { finalMark, gradeFor, percentage } from "./grading";
 import type { QuestionWiseReport } from "./question-wise-report";
-import { compareQuestions, questionLabel } from "./question-label";
+import { compareQuestions, examMaxTotal, questionLabel } from "./question-label";
 
 type Cell = string | number;
 type ExportRow = Record<string, Cell>;
@@ -52,7 +52,7 @@ export function buildQuestionWiseWorkbook(report: QuestionWiseReport) {
     const scripts = report.scripts.filter((s) => s.examId === exam.id).sort((a, b) => a.code.localeCompare(b.code));
     if (!scripts.length) continue;
     const questions = report.questions.filter((q) => q.examId === exam.id).sort(compareQuestions);
-    const maxTotal = questions.reduce((sum, q) => sum + q.maxMarks, 0);
+    const maxTotal = examMaxTotal(questions.map((q) => ({ ...q, max_marks: q.maxMarks })));
     const rows: ExportRow[] = [];
     const details: ExportRow[] = [];
 
@@ -76,7 +76,7 @@ export function buildQuestionWiseWorkbook(report: QuestionWiseReport) {
       for (const question of questions) {
         const mark = markByKey.get(`${script.id}:${question.id}`);
         const secured = report.scope === "evaluator" ? mark?.evaluatorMarks : finalMark(mark?.evaluatorMarks ?? null, mark?.moderatedMarks ?? null);
-        row[`${questionLabel(question)} Secured (/ ${question.maxMarks})`] = secured ?? "";
+        row[`${question.unit != null ? `U${question.unit} ` : ""}${questionLabel(question)} Secured (/ ${question.maxMarks})`] = secured ?? "";
       }
       row["Evaluator Total"] = script.evaluatorTotal ?? "";
       if (report.scope !== "evaluator") row["Final Total"] = script.finalTotal ?? "";
@@ -89,6 +89,7 @@ export function buildQuestionWiseWorkbook(report: QuestionWiseReport) {
         const detail: ExportRow = {
           "Paper Code": exam.code,
           "Script Code": script.code,
+          "Unit": question.unit ?? "",
           "Question": questionLabel(question),
           "Topic": question.label,
           "Maximum Marks": question.maxMarks,
