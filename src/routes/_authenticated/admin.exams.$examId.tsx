@@ -472,6 +472,7 @@ function QuestionsPanel({ examId, pattern, questions, editable, onChange, maxTot
         {questions.map((q) => <QuestionRow key={q.id} q={q} editable={editable} onChange={onChange} />)}
         <div className="flex justify-between bg-muted px-4 py-3 font-semibold"><span>Maximum marks</span><span className="font-mono">{maxTotal}</span></div>
       </div>
+      {editable && semester && <UnitBuilder examId={examId} questions={questions} onChange={onChange} />}
       {editable ? (
         <form onSubmit={add} className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="w-full space-y-1 sm:basis-full">
@@ -581,5 +582,42 @@ function ScriptIntake({ examId, questions, students, onDone }: { examId: string;
         Add sample scripts {students.length ? "(one per student)" : "(3)"}
       </Button>
     </div>
+  );
+}
+
+/** Semester: creates Unit N as Q(2N-1)a… OR Q(2N)a… in one step. */
+function UnitBuilder({ examId, questions, onChange }: { examId: string; questions: Q[]; onChange: () => void }) {
+  const nextUnit = questions.reduce((m, q) => Math.max(m, q.unit ?? 0), 0) + 1;
+  const [unit, setUnit] = useState("");
+  const [parts, setParts] = useState("4");
+  const [marks, setMarks] = useState("5");
+  const [busy, setBusy] = useState(false);
+  const u = Number(unit) || nextUnit;
+  const n = Math.min(Math.max(Number(parts) || 1, 1), 10);
+  const letters = Array.from({ length: n }, (_, i) => String.fromCharCode(97 + i));
+  async function build(e: React.FormEvent) {
+    e.preventDefault();
+    const nums = [2 * u - 1, 2 * u];
+    if (questions.some((q) => nums.includes(q.number))) { toast.error(`Q${nums[0]} or Q${nums[1]} already exists — remove them first.`); return; }
+    setBusy(true);
+    const rows = nums.flatMap((number) => letters.map((part) => ({ exam_id: examId, number, part, unit: u, label: "", max_marks: Number(marks), model_answer: "" })));
+    const { error } = await supabase.from("questions").insert(rows);
+    setBusy(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Unit ${u} added: Q${nums[0]}a–${letters.at(-1)} OR Q${nums[1]}a–${letters.at(-1)}`);
+    setUnit("");
+    onChange();
+  }
+  return (
+    <form onSubmit={build} className="mt-4 rounded-md border border-gold/40 bg-gold/5 p-4">
+      <p className="text-sm font-semibold">Quick add a unit</p>
+      <p className="mt-1 text-xs text-muted-foreground">Unit {u} → Q{2 * u - 1}{letters.join(", ")} <b>or</b> Q{2 * u}{letters.join(", ")}. Each part gets the same marks; edit any part afterwards.</p>
+      <div className="mt-3 flex flex-wrap items-end gap-3">
+        <div className="space-y-1"><Label>Unit</Label><Input className="w-20" type="number" min={1} value={unit} placeholder={String(nextUnit)} onChange={(e) => setUnit(e.target.value)} /></div>
+        <div className="space-y-1"><Label>Parts per question</Label><Input className="w-24" type="number" min={1} max={10} value={parts} onChange={(e) => setParts(e.target.value)} /></div>
+        <div className="space-y-1"><Label>Marks per part</Label><Input className="w-24" type="number" min={0.5} step="0.5" required value={marks} onChange={(e) => setMarks(e.target.value)} /></div>
+        <Button type="submit" disabled={busy}>Add unit {u}</Button>
+      </div>
+    </form>
   );
 }
